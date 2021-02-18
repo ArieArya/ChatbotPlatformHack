@@ -8,33 +8,7 @@ import os
 from datetime import datetime, timedelta
 
 
-# Obtains all coins and their total count in past "past_hours" hours
-def getAllCount(request, past_hours):  
-    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
-    data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
-    
-    # collect count to a dictionary
-    crypto_dict = {}
-    for row in data_list:
-        if row["symbol"] in crypto_dict:
-            crypto_dict[row["symbol"]] += row["count"]
-        else:
-            crypto_dict[row["symbol"]] = row["count"]
-    
-    # form new list to sort
-    crypto_list = []
-    for symbol, count in crypto_dict.items():
-        crypto_list.append([symbol, count])
-    crypto_list.sort(key=lambda x: x[1], reverse=True)
-    
-    # form JSON list
-    json_list = []
-    for row in crypto_list:
-        json_list.append({"symbol": row[0], "count": row[1]})
 
-    return JsonResponse(json_list, safe=False)
-    
-    
 # Obtains the top "n" coins and their total count in past "past_hours" hours
 def getNCount(request, n, past_hours):
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
@@ -65,70 +39,64 @@ def getNCount(request, n, past_hours):
     return JsonResponse(json_list, safe=False)
 
 
-# Obtains hourly count of the top "n" coins in the past "past_hours" hours
-def getNCountHourly(request, n, past_hours):
+# Obtains the top "n" coins and their total score in past "past_hours" hours
+def getNScore(request, n, past_hours):
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
-    
-    # collect data into dictionary
+
+    # collect count to a dictionary
     crypto_dict = {}
     for row in data_list:
         crypto_symbol = row["symbol"]
-        if crypto_symbol in crypto_dict:
-            crypto_dict[crypto_symbol].append(
-                {"date": row["date"], "count": row["count"]})
-        else:
-            crypto_dict[crypto_symbol] = [{"date": row["date"], "count": row["count"]}]
-    
+        count = row["count"]
+        marketcap = row["marketcap"]
+        percentchange = row["percent_change_24h"]
+        volume = row["volume_24h"]
+
+        try:
+            # calculate performance
+            performance_score = count * \
+                (volume / marketcap) * (1 + (percentchange/100))
+            if crypto_symbol in crypto_dict:
+                crypto_dict[crypto_symbol] += performance_score
+            else:
+                crypto_dict[crypto_symbol] = performance_score
+
+        except:
+            print("Zero marketcap for coin: ", crypto_symbol)
+
     # form new list to sort
     crypto_list = []
-    for symbol, data in crypto_dict.items():
-        crypto_list.append([symbol, data])
-    crypto_list.sort(key=lambda x: sum([y["count"] for y in x[1]]), reverse=True)
-    
+    for symbol, score in crypto_dict.items():
+        crypto_list.append([symbol, score])
+    crypto_list.sort(key=lambda x: x[1], reverse=True)
+
     # form JSON list
     if n >= len(crypto_list):
         n = len(crypto_list)
-    
+
     json_list = []
     for i in range(n):
-        cur_symbol = crypto_list[i][0]
-        cur_info = crypto_list[i][1]
-        cur_info.sort(key=lambda x: x["date"], reverse=True) # sort by date
-        
         json_list.append(
-            {"symbol": cur_symbol, "crypto_info": cur_info})
+            {"symbol": crypto_list[i][0], "score": crypto_list[i][1]})
 
     return JsonResponse(json_list, safe=False)
 
 
 # Obtains total count of coin "crypto_symbol" in the past "past_hours" hours
-def getCoinCountTotal(request, crypto_symbol, past_hours):
+def getCoinCountScoreTotal(request, crypto_symbol, past_hours):
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(date__gte=filter_date, symbol=crypto_symbol).values()
     
     count = 0
+    score = 0
     for row in data_list:
         count += row["count"]
+        score += row["score"]
     
-    json_list = {"symbol": crypto_symbol, "count: ": count}
+    json_list = {"symbol": crypto_symbol, "crypto_info: ": {"count": count, "score": score}}
     return JsonResponse(json_list, safe=False)
 
-
-# Obtains hourly count of coin "crypto_symbol" in the past "past_hours" hours
-def getCoinCountHourly(request, crypto_symbol, past_hours):
-    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
-    data_list = CryptoDatabase.objects.filter(date__gte=filter_date, symbol=crypto_symbol).values()
-
-    # collect data into dictionary
-    hourly_list = []
-    for row in data_list:
-        hourly_list.append({"date": row["date"], "count": row["count"]})
-    hourly_list.sort(key=lambda x: x["date"], reverse=True)
-
-    json_list = [{"symbol": crypto_symbol, "crypto_info": hourly_list}]
-
-    return JsonResponse(json_list, safe=False)
 
 
 # Obtains all hourly data of top "n" coins by performance score in the past "past_hours" hours
@@ -214,7 +182,7 @@ def getAllDataCoin(request, crypto_symbol, past_hours):
     return JsonResponse(json_list, safe=False)
 
 
-# e.g. combined_hours=2 will give combined data every 6 hours
+# Combines data over multiple hours together
 def getAllTopDataCombinedHours(request, n, past_hours, combined_hours):
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
@@ -304,7 +272,7 @@ def getAllTopDataCombinedHours(request, n, past_hours, combined_hours):
     return JsonResponse(json_list, safe=False)
 
 
-# e.g. combined_hours=2 will give combined data every 6 hours
+# Combines data over multiple hours together
 def getAllDataCoinCombinedHours(request, crypto_symbol, past_hours, combined_hours):
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(
@@ -375,44 +343,3 @@ def getAllDataCoinCombinedHours(request, crypto_symbol, past_hours, combined_hou
     return JsonResponse(json_list, safe=False)
 
 
-# Obtains the top "n" coins and their total score in past "past_hours" hours
-def getNScore(request, n, past_hours):
-    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
-    data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
-
-    # collect count to a dictionary
-    crypto_dict = {}
-    for row in data_list:
-        crypto_symbol = row["symbol"]
-        count = row["count"]
-        marketcap = row["marketcap"]
-        percentchange = row["percent_change_24h"]
-        volume = row["volume_24h"]
-        
-        try:
-            # calculate performance
-            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
-            if crypto_symbol in crypto_dict:
-                crypto_dict[crypto_symbol] += performance_score
-            else:
-                crypto_dict[crypto_symbol] = performance_score
-        
-        except:
-            print("Zero marketcap for coin: ", crypto_symbol)
-
-    # form new list to sort
-    crypto_list = []
-    for symbol, score in crypto_dict.items():
-        crypto_list.append([symbol, score])
-    crypto_list.sort(key=lambda x: x[1], reverse=True)
-
-    # form JSON list
-    if n >= len(crypto_list):
-        n = len(crypto_list)
-
-    json_list = []
-    for i in range(n):
-        json_list.append(
-            {"symbol": crypto_list[i][0], "score": crypto_list[i][1]})
-
-    return JsonResponse(json_list, safe=False)
