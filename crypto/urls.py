@@ -52,6 +52,13 @@ urlpatterns = [
     
     # Obtains combined data for "combinedHours" hours of coin "crypto_symbol" in the past "past_hours" hours
     path('query&coinHourlyCount=<str:crypto_symbol>&pastHours=<int:past_hours>&combinedHours=<int:combined_hours>&getAllData',
-         v.getAllDataCoinCombinedHours)
+         v.getAllDataCoinCombinedHours),
+    
+    # Obtains hourly performance score of the top "n" coins in the past "past_hours" hours
+    path('query&hourlyScore=<int:n>&pastHours=<int:past_hours>', v.getNScoreHourly),
+    
+    # Obtains hourly performance score of coin "crypto_symbol" in the past "past_hours" hours
+    path('query&coinHourlyScore=<str:crypto_symbol>&pastHours=<int:past_hours>',
+         v.getCoinScoreHourly)
     
 ]
