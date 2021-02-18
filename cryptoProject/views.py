@@ -88,13 +88,25 @@ def getCoinCountScoreTotal(request, crypto_symbol, past_hours):
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(date__gte=filter_date, symbol=crypto_symbol).values()
     
-    count = 0
-    score = 0
+    acc_count = 0
+    acc_score = 0
     for row in data_list:
-        count += row["count"]
-        score += row["score"]
+        count = row["count"]
+        marketcap = row["marketcap"]
+        percentchange = row["percent_change_24h"]
+        volume = row["volume_24h"]
+        
+        acc_count += count
+        
+        try:
+            # calculate performance
+            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+            acc_score += performance_score
+            
+        except:
+            print("Zero marketcap for coin: ", crypto_symbol)
     
-    json_list = {"symbol": crypto_symbol, "crypto_info: ": {"count": count, "score": score}}
+    json_list = {"symbol": crypto_symbol, "crypto_info: ": {"count": acc_count, "score": acc_score}}
     return JsonResponse(json_list, safe=False)
 
 
