@@ -366,12 +366,59 @@ def getCoinScoreHourly(request, crypto_symbol, past_hours):
         percentchange = row["percent_change_24h"]
         volume = row["volume_24h"]
         
-        # calculate performance
-        performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+        try:
+            # calculate performance
+            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+            hourly_list.append({"date": row["date"], "score": performance_score})
         
-        hourly_list.append({"date": row["date"], "score": performance_score})
+        except:
+            print("Zero marketcap for coin: ", crypto_symbol)
+        
     hourly_list.sort(key=lambda x: x["date"], reverse=True)
 
     json_list = [{"symbol": crypto_symbol, "crypto_info": hourly_list}]
+
+    return JsonResponse(json_list, safe=False)
+
+
+# Obtains the top "n" coins and their total score in past "past_hours" hours
+def getNScore(request, n, past_hours):
+    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
+    data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
+
+    # collect count to a dictionary
+    crypto_dict = {}
+    for row in data_list:
+        crypto_symbol = row["symbol"]
+        count = row["count"]
+        marketcap = row["marketcap"]
+        percentchange = row["percent_change_24h"]
+        volume = row["volume_24h"]
+        
+        try:
+            # calculate performance
+            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+            if crypto_symbol in crypto_dict:
+                crypto_dict[crypto_symbol] += performance_score
+            else:
+                crypto_dict[crypto_symbol] = performance_score
+        
+        except:
+            print("Zero marketcap for coin: ", crypto_symbol)
+
+    # form new list to sort
+    crypto_list = []
+    for symbol, count in crypto_dict.items():
+        crypto_list.append([symbol, count])
+    crypto_list.sort(key=lambda x: x[1], reverse=True)
+
+    # form JSON list
+    if n >= len(crypto_list):
+        n = len(crypto_list)
+
+    json_list = []
+    for i in range(n):
+        json_list.append(
+            {"symbol": crypto_list[i][0], "score": crypto_list[i][1]})
 
     return JsonResponse(json_list, safe=False)
