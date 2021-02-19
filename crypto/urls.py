@@ -21,6 +21,9 @@ urlpatterns = [
     # For admin purposes
     path('admin/', admin.site.urls),
     
+    # Get all Crypto Symbol Names
+    path('query&allSymbols', v.getSymbols),
+    
     # Obtains the top "n" coins and their total count in past "past_hours" hours
     path('query&topCount=<int:n>&pastHours=<int:past_hours>', v.getNCount),
     

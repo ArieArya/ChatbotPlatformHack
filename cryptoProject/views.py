@@ -8,6 +8,20 @@ import os
 from datetime import datetime, timedelta
 
 
+# Get all Crypto Symbol Names
+def getSymbols(request):
+    filter_date = datetime.utcnow() - timedelta(hours=48)
+    data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
+    
+    # collect count to a dictionary
+    crypto_dict = {}
+    for row in data_list:
+        if not row["symbol"] in crypto_dict:
+            crypto_dict[row["symbol"]] = 1
+    
+    json_list = list(crypto_dict.keys())
+    return JsonResponse(json_list, safe=False)
+    
 
 # Obtains the top "n" coins and their total count in past "past_hours" hours
 def getNCount(request, n, past_hours):
