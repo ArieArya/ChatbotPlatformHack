@@ -7,6 +7,10 @@ import json
 import os
 from datetime import datetime, timedelta
 
+# Tanh function
+def hyp_tan(val):
+    return math.tanh(val/50)
+
 
 # Get all Crypto Symbol Names
 def getSymbols(request):
@@ -92,8 +96,7 @@ def getNScore(request, n, past_hours):
 
         try:
             # calculate performance
-            performance_score = count * \
-                (volume / marketcap) * (1 + (percentchange/100))
+            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
             if crypto_symbol in crypto_dict:
                 crypto_dict[crypto_symbol] += performance_score
             else:
@@ -137,7 +140,7 @@ def getCoinCountScoreTotal(request, crypto_symbol, past_hours):
         
         try:
             # calculate performance
-            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
             acc_score += performance_score
             
         except:
@@ -164,7 +167,7 @@ def getAllTopData(request, n, past_hours):
 
         try:
             # calculate performance
-            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
         
             if crypto_symbol in crypto_dict:
                 crypto_dict[crypto_symbol].append(
@@ -217,7 +220,7 @@ def getAllDataCoin(request, crypto_symbol, past_hours):
         
         try:
             # calculate performance
-            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
             hourly_list.append({"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
                                 "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]})
         
@@ -247,7 +250,7 @@ def getAllTopDataCombinedHours(request, n, past_hours, combined_hours):
 
         try:
             # calculate performance
-            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
 
             if crypto_symbol in crypto_dict:
                 crypto_dict[crypto_symbol].append(
@@ -337,7 +340,7 @@ def getAllDataCoinCombinedHours(request, crypto_symbol, past_hours, combined_hou
 
         try:
             # calculate performance
-            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
             hourly_list.append({"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
                                 "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]})
 
