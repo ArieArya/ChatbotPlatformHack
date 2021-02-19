@@ -22,21 +22,11 @@ def getSymbols(request):
         percentchange = row["percent_change_24h"]
         volume = row["volume_24h"]
 
-        try:
-            # calculate performance
-            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
-        
-            # change the slug after
-            if crypto_symbol in crypto_dict:
-                crypto_dict[crypto_symbol].append(
-                    {"slug": "TEMP_SLUG", "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"],
-                     "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]})
-            else:
-                crypto_dict[crypto_symbol] = [
-                    {"slug": "TEMP_SLUG", "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"],
-                     "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]}]
-        except:
-            print("Zero marketcap for coin: ", crypto_symbol)
+
+        if crypto_symbol not in crypto_dict:
+            crypto_dict[crypto_symbol] = {
+                "slug": "TEMP_SLUG", "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"],
+                "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]}
     
     # form new list 
     crypto_list = []
@@ -47,6 +37,7 @@ def getSymbols(request):
     for i in range(len(crypto_list)):
         cur_symbol = crypto_list[i][0]
         cur_info = crypto_list[i][1]
+        print("type: ", type(cur_info))
 
         json_list.append(
             {"symbol": cur_symbol, "slug": cur_info["slug"], "price": cur_info["price"], "marketcap": cur_info["marketcap"], "volume_24h": cur_info["volume_24h"],
