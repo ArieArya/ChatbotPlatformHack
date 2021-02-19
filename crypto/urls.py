@@ -22,32 +22,32 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # Get all Crypto Symbol Names
-    path('query&allSymbols', v.getSymbols),
+    path('query/allSymbols', v.getSymbols),
     
     # Obtains the top "n" coins and their total count in past time period
-    path('query&topCount=<int:n>&timePeriod=<str:period>', v.getNCount),
+    path('query/topCount=<int:n>/timePeriod=<str:period>', v.getNCount),
     
     # Obtains the top "n" coins and their total score in past time period
-    path('query&topScore=<int:n>&timePeriod=<str:period>', v.getNScore),
+    path('query/topScore=<int:n>/timePeriod=<str:period>', v.getNScore),
     
     # Obtains total count and score of coin "crypto_symbol" in the past time period
-    path('query&coinTotalCountScore=<str:crypto_symbol>&timePeriod=<str:period>',
+    path('query/coinTotalCountScore=<str:crypto_symbol>/timePeriod=<str:period>',
          v.getCoinCountScoreTotal),
     
     # Obtains all hourly data of top "n" coin in the past time period
-    path('query&hourlyData=<int:n>&timePeriod=<str:period>',
+    path('query/hourlyData=<int:n>/timePeriod=<str:period>',
          v.getAllTopData),
     
     # Obtains all hourly data of coin "crypto_symbol" in the past time period
-    path('query&coinHourlyData=<str:crypto_symbol>&timePeriod=<str:period>',
+    path('query/coinHourlyData=<str:crypto_symbol>/timePeriod=<str:period>',
          v.getAllDataCoin),
     
     # Obtains combined data for top "n" coins in the past time period
-    path('query&hourlyData=<int:n>&timePeriod=<str:period>&combinedData=<int:combined_data>',
+    path('query/hourlyData=<int:n>/timePeriod=<str:period>/combinedData=<int:combined_data>',
          v.getAllTopDataCombinedHours),
     
     # Obtains combined data for coin "crypto_symbol" in the past time period
-    path('query&coinHourlyData=<str:crypto_symbol>&timePeriod=<str:period>&combinedData=<int:combined_data>',
+    path('query/coinHourlyData=<str:crypto_symbol>/timePeriod=<str:period>/combinedData=<int:combined_data>',
          v.getAllDataCoinCombinedHours)
     
     
