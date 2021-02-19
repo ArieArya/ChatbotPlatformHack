@@ -35,7 +35,7 @@ urlpatterns = [
          v.getCoinCountScoreTotal),
     
     # Obtains all hourly data of top "n" coin in the past time period
-    path('query&hourlyData=<int:n>&timePeriod=<int:time><str:period>',
+    path('query&hourlyData=<int:n>&timePeriod=<str:period>',
          v.getAllTopData),
     
     # Obtains all hourly data of coin "crypto_symbol" in the past time period
