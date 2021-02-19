@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 def hyp_tan(val):
     return math.tanh(val/50)
 
-
 # Get all Crypto Symbol Names
 def getSymbols(request):
     filter_date = datetime.utcnow() - timedelta(hours=3)
