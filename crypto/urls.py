@@ -24,30 +24,30 @@ urlpatterns = [
     # Get all Crypto Symbol Names
     path('query&allSymbols', v.getSymbols),
     
-    # Obtains the top "n" coins and their total count in past "past_hours" hours
-    path('query&topCount=<int:n>&pastHours=<int:past_hours>', v.getNCount),
+    # Obtains the top "n" coins and their total count in past time period
+    path('query&topCount=<int:n>&timePeriod=<int:time><str:period>', v.getNCount),
     
-    # Obtains the top "n" coins and their total score in past "past_hours" hours
-    path('query&topScore=<int:n>&pastHours=<int:past_hours>', v.getNScore),
+    # Obtains the top "n" coins and their total score in past time period
+    path('query&topScore=<int:n>&timePeriod=<int:time><str:period>', v.getNScore),
     
-    # Obtains total count and score of coin "crypto_symbol" in the past "past_hours" hours
-    path('query&coinTotalCountScore=<str:crypto_symbol>&pastHours=<int:past_hours>',
+    # Obtains total count and score of coin "crypto_symbol" in the past time period
+    path('query&coinTotalCountScore=<str:crypto_symbol>&timePeriod=<int:time><str:period>',
          v.getCoinCountScoreTotal),
     
-    # Obtains all hourly data of top "n" coin in the past "past_hours" hours
-    path('query&hourlyData=<int:n>&pastHours=<int:past_hours>',
+    # Obtains all hourly data of top "n" coin in the past time period
+    path('query&hourlyData=<int:n>&timePeriod=<int:time><str:period>',
          v.getAllTopData),
     
-    # Obtains all hourly data of coin "crypto_symbol" in the past "past_hours" hours
-    path('query&coinHourlyData=<str:crypto_symbol>&pastHours=<int:past_hours>',
+    # Obtains all hourly data of coin "crypto_symbol" in the past time period
+    path('query&coinHourlyData=<str:crypto_symbol>&timePeriod=<int:time><str:period>',
          v.getAllDataCoin),
     
-    # Obtains combined data for "combinedHours" hours of top "n" coins in the past "past_hours" hours
-    path('query&hourlyData=<int:n>&pastHours=<int:past_hours>&combinedHours=<int:combined_hours>',
+    # Obtains combined data for top "n" coins in the past time period
+    path('query&hourlyData=<int:n>&timePeriod=<int:time><str:period>&combinedData=<int:combined_data>',
          v.getAllTopDataCombinedHours),
     
-    # Obtains combined data for "combinedHours" hours of coin "crypto_symbol" in the past "past_hours" hours
-    path('query&coinHourlyData=<str:crypto_symbol>&pastHours=<int:past_hours>&combinedHours=<int:combined_hours>',
+    # Obtains combined data for coin "crypto_symbol" in the past time period
+    path('query&coinHourlyData=<str:crypto_symbol>&timePeriod=<int:time><str:period>&combinedData=<int:combined_data>',
          v.getAllDataCoinCombinedHours)
     
     

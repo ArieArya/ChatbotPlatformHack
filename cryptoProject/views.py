@@ -11,6 +11,17 @@ from datetime import datetime, timedelta
 def hyp_tan(val):
     return 10*math.tanh(val/1000)
 
+# Convert time period to hours
+def time_convert_hours(time, period):
+    if period == 'H':
+        return time
+    elif period == 'D':
+        return 24 * time
+    elif period == 'M':
+        return 24 * 30 * time
+    elif period == 'Y':
+        return 24 * 30 * 365 * time
+
 # Get all Crypto Symbol Names
 def getSymbols(request):
     filter_date = datetime.utcnow() - timedelta(hours=3)
@@ -49,8 +60,9 @@ def getSymbols(request):
     return JsonResponse(json_list, safe=False)
     
 
-# Obtains the top "n" coins and their total count in past "past_hours" hours
-def getNCount(request, n, past_hours):
+# Obtains the top "n" coins and their total count in past time period
+def getNCount(request, n, time, period):
+    past_hours = time_convert_hours(time, period)
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
 
@@ -79,8 +91,9 @@ def getNCount(request, n, past_hours):
     return JsonResponse(json_list, safe=False)
 
 
-# Obtains the top "n" coins and their total score in past "past_hours" hours
-def getNScore(request, n, past_hours):
+# Obtains the top "n" coins and their total score in past time period
+def getNScore(request, n, time, period):
+    past_hours = time_convert_hours(time, period)
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
 
@@ -122,8 +135,9 @@ def getNScore(request, n, past_hours):
     return JsonResponse(json_list, safe=False)
 
 
-# Obtains total count of coin "crypto_symbol" in the past "past_hours" hours
-def getCoinCountScoreTotal(request, crypto_symbol, past_hours):
+# Obtains total count of coin "crypto_symbol" in the past time period
+def getCoinCountScoreTotal(request, crypto_symbol, time, period):
+    past_hours = time_convert_hours(time, period)
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(date__gte=filter_date, symbol=crypto_symbol).values()
     
@@ -150,8 +164,9 @@ def getCoinCountScoreTotal(request, crypto_symbol, past_hours):
 
 
 
-# Obtains all hourly data of top "n" coins by performance score in the past "past_hours" hours
-def getAllTopData(request, n, past_hours):
+# Obtains all hourly data of top "n" coins by performance score in the past time period
+def getAllTopData(request, n, time, period):
+    past_hours = time_convert_hours(time, period)
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
 
@@ -179,7 +194,6 @@ def getAllTopData(request, n, past_hours):
         except:
             print("Zero marketcap for coin: ", crypto_symbol)
             
-
     # form new list to sort
     crypto_list = []
     for symbol, data in crypto_dict.items():
@@ -204,7 +218,8 @@ def getAllTopData(request, n, past_hours):
     
 
 # Obtains all hourly data of coin "crypto_symbol" in the past "hours" hours
-def getAllDataCoin(request, crypto_symbol, past_hours):
+def getAllDataCoin(request, crypto_symbol, time, period):
+    past_hours = time_convert_hours(time, period)
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(
         date__gte=filter_date, symbol=crypto_symbol).values()
@@ -234,7 +249,8 @@ def getAllDataCoin(request, crypto_symbol, past_hours):
 
 
 # Combines data over multiple hours together
-def getAllTopDataCombinedHours(request, n, past_hours, combined_hours):
+def getAllTopDataCombinedHours(request, n, time, period, combined_data):
+    past_hours = time_convert_hours(time, period)
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
 
@@ -299,7 +315,7 @@ def getAllTopDataCombinedHours(request, n, past_hours, combined_hours):
                 cur_popular_count = cur_symbol_list[k]["count"]
                 cur_popular_link = cur_symbol_list[k]["popular_link"]
             
-            if idx_counter == combined_hours:
+            if idx_counter == combined_data:
                 cur_iter_dict["count"] = cur_iter_count
                 cur_iter_dict["score"] = cur_iter_score
                 cur_iter_dict["popular_link"] = cur_popular_link
@@ -324,7 +340,8 @@ def getAllTopDataCombinedHours(request, n, past_hours, combined_hours):
 
 
 # Combines data over multiple hours together
-def getAllDataCoinCombinedHours(request, crypto_symbol, past_hours, combined_hours):
+def getAllDataCoinCombinedHours(request, crypto_symbol, time, period, combined_data):
+    past_hours = time_convert_hours(time, period)
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(
         date__gte=filter_date, symbol=crypto_symbol).values()
@@ -370,7 +387,7 @@ def getAllDataCoinCombinedHours(request, crypto_symbol, past_hours, combined_hou
             cur_popular_count = cur_symbol_list[k]["count"]
             cur_popular_link = cur_symbol_list[k]["popular_link"]
         
-        if idx_counter == combined_hours:
+        if idx_counter == combined_data:
             cur_iter_dict["count"] = cur_iter_count
             cur_iter_dict["score"] = cur_iter_score
             cur_iter_dict["popular_link"] = cur_popular_link
