@@ -29,21 +29,19 @@ def getSymbols(request):
             # change the slug after
             if crypto_symbol in crypto_dict:
                 crypto_dict[crypto_symbol].append(
-                    {"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"], 
-                    "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]})
+                    {"slug": "TEMP_SLUG", "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"],
+                     "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]})
             else:
                 crypto_dict[crypto_symbol] = [
-                    {"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
-                    "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]}]
+                    {"slug": "TEMP_SLUG", "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"],
+                     "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]}]
         except:
             print("Zero marketcap for coin: ", crypto_symbol)
     
-    # form new list to sort
+    # form new list 
     crypto_list = []
     for symbol, data in crypto_dict.items():
         crypto_list.append([symbol, data])
-    crypto_list.sort(key=lambda x: sum(
-        [y["score"] for y in x[1]]), reverse=True)
 
     json_list = []
     for i in range(len(crypto_list)):
@@ -51,7 +49,8 @@ def getSymbols(request):
         cur_info = crypto_list[i][1]
 
         json_list.append(
-            {"symbol": cur_symbol, "crypto_info": cur_info})
+            {"symbol": cur_symbol, "slug": cur_info["slug"], "price": cur_info["price"], "marketcap": cur_info["marketcap"], "volume_24h": cur_info["volume_24h"],
+             "percent_change_24h": cur_info["percent_change_24h"], "percent_change_1h": cur_info["percent_change_1h"]})
 
     return JsonResponse(json_list, safe=False)
     
