@@ -10,16 +10,49 @@ from datetime import datetime, timedelta
 
 # Get all Crypto Symbol Names
 def getSymbols(request):
-    filter_date = datetime.utcnow() - timedelta(hours=48)
+    filter_date = datetime.utcnow() - timedelta(hours=3)
     data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
     
     # collect count to a dictionary
     crypto_dict = {}
     for row in data_list:
-        if not row["symbol"] in crypto_dict:
-            crypto_dict[row["symbol"]] = 1
+        crypto_symbol = row["symbol"]
+        count = row["count"]
+        marketcap = row["marketcap"]
+        percentchange = row["percent_change_24h"]
+        volume = row["volume_24h"]
+
+        try:
+            # calculate performance
+            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+        
+            # change the slug after
+            if crypto_symbol in crypto_dict:
+                crypto_dict[crypto_symbol].append(
+                    {"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"], 
+                    "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]})
+            else:
+                crypto_dict[crypto_symbol] = [
+                    {"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
+                    "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]}]
+        except:
+            print("Zero marketcap for coin: ", crypto_symbol)
     
-    json_list = list(crypto_dict.keys())
+    # form new list to sort
+    crypto_list = []
+    for symbol, data in crypto_dict.items():
+        crypto_list.append([symbol, data])
+    crypto_list.sort(key=lambda x: sum(
+        [y["score"] for y in x[1]]), reverse=True)
+
+    json_list = []
+    for i in range(len(crypto_list)):
+        cur_symbol = crypto_list[i][0]
+        cur_info = crypto_list[i][1]
+
+        json_list.append(
+            {"symbol": cur_symbol, "crypto_info": cur_info})
+
     return JsonResponse(json_list, safe=False)
     
 
@@ -145,11 +178,11 @@ def getAllTopData(request, n, past_hours):
         
             if crypto_symbol in crypto_dict:
                 crypto_dict[crypto_symbol].append(
-                    {"date": row["date"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"], 
+                    {"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
                     "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]})
             else:
                 crypto_dict[crypto_symbol] = [
-                    {"date": row["date"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
+                    {"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
                     "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]}]
         except:
             print("Zero marketcap for coin: ", crypto_symbol)
@@ -195,7 +228,7 @@ def getAllDataCoin(request, crypto_symbol, past_hours):
         try:
             # calculate performance
             performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
-            hourly_list.append({"date": row["date"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
+            hourly_list.append({"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
                                 "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]})
         
         except:
@@ -228,11 +261,11 @@ def getAllTopDataCombinedHours(request, n, past_hours, combined_hours):
 
             if crypto_symbol in crypto_dict:
                 crypto_dict[crypto_symbol].append(
-                    {"date": row["date"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
+                    {"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
                      "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]})
             else:
                 crypto_dict[crypto_symbol] = [
-                    {"date": row["date"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
+                    {"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
                      "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]}]
         except:
             print("Zero marketcap for coin: ", crypto_symbol)
@@ -314,9 +347,8 @@ def getAllDataCoinCombinedHours(request, crypto_symbol, past_hours, combined_hou
 
         try:
             # calculate performance
-            performance_score = count * \
-                (volume / marketcap) * (1 + (percentchange/100))
-            hourly_list.append({"date": row["date"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
+            performance_score = count * (volume / marketcap) * (1 + (percentchange/100))
+            hourly_list.append({"date": row["date"], "slug": "TEMP_SLUG", "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "price": row["price"], "marketcap": row["marketcap"],
                                 "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]})
 
         except:
