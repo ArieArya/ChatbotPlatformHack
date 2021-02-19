@@ -23,6 +23,8 @@ def time_convert_hours(time, period):
         return 24 * 30 * time
     elif period == 'Y':
         return 24 * 30 * 365 * time
+    else:
+        return time
 
 # Get all Crypto Symbol Names
 def getSymbols(request):
