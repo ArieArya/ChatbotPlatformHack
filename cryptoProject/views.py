@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 # Tanh function
 def hyp_tan(val):
-    return math.tanh(val/50)
+    return 10*math.tanh(val/1000)
 
 # Get all Crypto Symbol Names
 def getSymbols(request):
