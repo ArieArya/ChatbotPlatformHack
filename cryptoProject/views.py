@@ -17,6 +17,8 @@ def time_convert_hours(time, period):
         return time
     elif period == 'D':
         return 24 * time
+    elif period == 'W':
+        return 24 * 7 * time
     elif period == 'M':
         return 24 * 30 * time
     elif period == 'Y':
