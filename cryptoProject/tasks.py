@@ -10,9 +10,9 @@ from datetime import datetime, timedelta
 
 @shared_task()
 def deleteOldData():
-    # Deletes all rows more than a week ago
-    a_week_ago = datetime.utcnow() - timedelta(days=7)
-    curCryptoDatabase = CryptoDatabase.objects.filter(date__lt=a_week_ago).delete()
+    # Deletes all rows more than two weeks ago
+    two_weeks_ago = datetime.utcnow() - timedelta(days=14)
+    curCryptoDatabase = CryptoDatabase.objects.filter(date__lt=two_weeks_ago).delete()
     curCryptoDatabase.save()
     
 
@@ -46,21 +46,24 @@ def insertNewCryptoData():
     crypto_list = []
     crypto_dict = {}
     crypto_slug_dict = {}
+    crypto_slug_names = {}
     crypto_link_count_dict = {}
     crypto_link_dict = {}
     
+    
     # exclude certain crypto
-    crypto_exclude_dict = {'A': 0, 'CAP': 0, 'TOP': 0, 'OK': 0, 'ANY': 0, 'CAN': 0}
+    crypto_exclude_dict = {'A': 0, 'CAP': 0, 'TOP': 0, 'OK': 0, 'ANY': 0, 'CAN': 0, 'JST': 0}
     
     for crypto_name in crypto_listings:
         crypto_symbol = crypto_name["symbol"]
         crypto_slug = crypto_name["slug"]
-        if crypto_symbol.isalnum() and not crypto_symbol in crypto_exclude_dict: # exclude the crypto 'A'
+        if crypto_symbol.isalnum() and not crypto_symbol in crypto_exclude_dict: 
             crypto_list.append(crypto_symbol)
             crypto_slug_dict[crypto_slug.lower()] = crypto_symbol
+            crypto_slug_names[crypto_symbol] = crypto_slug
             crypto_dict[crypto_symbol] = 0
             crypto_link_count_dict[crypto_symbol] = 0
-            crypto_link_dict[crypto_symbol] = ''
+            crypto_link_dict[crypto_symbol] = ['', '']
             
     # Perform web scraping
     scrape_period = cur_date - timedelta(hours=6)
@@ -104,14 +107,14 @@ def insertNewCryptoData():
                 crypto_dict[words] += upvotes
                 if upvotes >= crypto_link_count_dict[words]:
                     crypto_link_count_dict[words] = upvotes
-                    crypto_link_dict[words] = url
+                    crypto_link_dict[words] = [url, topics]
                 
             elif words.lower() in crypto_slug_dict: 
                 cor_symbol = crypto_slug_dict[words.lower()]
                 crypto_dict[cor_symbol] += upvotes
                 if upvotes >= crypto_link_count_dict[cor_symbol]:
                     crypto_link_count_dict[cor_symbol] = upvotes
-                    crypto_link_dict[cor_symbol] = url
+                    crypto_link_dict[cor_symbol] = [url, topics]
 
     # Update the price and market cap for each crypto symbol
     print("Inserting Crypto Data...")
@@ -145,9 +148,9 @@ def insertNewCryptoData():
                     crypto_quotes[crypto_symbol]['quote']['USD']['percent_change_1h'], 5)
                 cur_count = crypto_dict[crypto_symbol]
 
-                curCryptoDatabase = CryptoDatabase(symbol=crypto_symbol, date=cur_date, source='reddit', count=cur_count, popular_link=crypto_link_dict[crypto_symbol],
-                                                   price=cur_price, marketcap=cur_marketcap, volume_24h=cur_vol, percent_change_24h=cur_percent_change_24h,
-                                                   percent_change_1h=cur_percent_change_1h)
+                curCryptoDatabase = CryptoDatabase(symbol=crypto_symbol, slug=crypto_slug_names[crypto_symbol], date=cur_date, source='reddit', count=cur_count, popular_link=crypto_link_dict[crypto_symbol][0],
+                                                    popular_content=crypto_link_dict[crypto_symbol][1], price=cur_price, marketcap=cur_marketcap, volume_24h=cur_vol, 
+                                                    percent_change_24h=cur_percent_change_24h, percent_change_1h=cur_percent_change_1h)
                 # Save database
                 curCryptoDatabase.save()
             
