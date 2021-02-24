@@ -360,8 +360,8 @@ def getAllTopDataCombinedHours(request, n, period, combined_data):
 
 
 # Combines data over multiple hours together
-def getAllDataCoinCombinedHours(request, crypto_symbol, time, period, combined_data):
-    past_hours = time_convert_hours(time, period)
+def getAllDataCoinCombinedHours(request, crypto_symbol, period, combined_data):
+    past_hours = time_convert_hours(period)
     filter_date = datetime.utcnow() - timedelta(hours=past_hours)
     data_list = CryptoDatabase.objects.filter(
         date__gte=filter_date, symbol=crypto_symbol).values()
