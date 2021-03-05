@@ -1,1 +1,0 @@
-Django REST API that analyzes most popular cryptocurrency through web sentiment analysis - deployed through AWS EC2. Uses celery for asynchronous task management to perform hourly web scraping.

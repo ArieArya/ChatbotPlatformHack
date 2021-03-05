@@ -1,4 +1,4 @@
-"""crypto URL Configuration
+"""chatbot URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.1/topics/http/urls/
@@ -15,41 +15,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from cryptoProject import views as v
+from chatbotProject import views as v
 
 urlpatterns = [
     # For admin purposes
     path('admin/', admin.site.urls),
     
-    # Get all Crypto Symbol Names
-    path('query/allSymbols', v.getSymbols),
+    path('query/', v.temp),
     
-    # Obtains the top "n" coins and their total count in past time period
-    path('query/topCount=<int:n>/timePeriod=<str:period>', v.getNCount),
+    # Login
+    path('login/username=<str:username>/password=<str:password>', v.login),
     
-    # Obtains the top "n" coins and their total score in past time period
-    path('query/topScore=<int:n>/timePeriod=<str:period>', v.getNScore),
+    # Create new User
+    path('createUser/username=<str:username>/password=<str:password>', v.create_new_user),
     
-    # Obtains total count and score of coin "crypto_symbol" in the past time period
-    path('query/coinTotalCountScore=<str:crypto_symbol>/timePeriod=<str:period>',
-         v.getCoinCountScoreTotal),
-    
-    # Obtains all hourly data of top "n" coin in the past time period
-    path('query/hourlyData=<int:n>/timePeriod=<str:period>',
-         v.getAllTopData),
-    
-    # Obtains all hourly data of coin "crypto_symbol" in the past time period
-    path('query/coinHourlyData=<str:crypto_symbol>/timePeriod=<str:period>',
-         v.getAllDataCoin),
-    
-    # Obtains combined data for top "n" coins in the past time period
-    path('query/hourlyData=<int:n>/timePeriod=<str:period>/combinedData=<int:combined_data>',
-         v.getAllTopDataCombinedHours),
-    
-    # Obtains combined data for coin "crypto_symbol" in the past time period
-    path('query/coinHourlyData=<str:crypto_symbol>/timePeriod=<str:period>/combinedData=<int:combined_data>',
-         v.getAllDataCoinCombinedHours)
-    
-    
+    # Train new model
+    path('trainNewModel/secretkey=<str:secret_key>', v.train_new_model),
+
+    # Obtain response from model
+    path('getResponse/secretkey=<str:secret_key>/message=<str:inp_message>', v.get_response)
     
 ]

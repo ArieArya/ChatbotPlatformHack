@@ -1,437 +1,85 @@
 from django.shortcuts import render
-from .models import CryptoDatabase
+from .models import ChatbotDatabase
 from django.http import JsonResponse
 import pandas as pd
 import math
 import json
 import os
 from datetime import datetime, timedelta
+from random import randrange
+from create_new_model import create_new_model
+from chat_response import chat_response
 
-# Tanh function
-def hyp_tan(val):
-    return 10*math.tanh(val/1000)
 
-# Convert time period to hours
-def time_convert_hours(period):
-    # Split period to time and unit
-    try:
-        unit = str(period[len(period)-1])
-        time = int(period[:len(period)-1])
-        if unit == 'H':
-            return time
-        elif unit == 'D':
-            return 24 * time
-        elif unit == 'W':
-            return 24 * 7 * time
-        elif unit == 'M':
-            return 24 * 30 * time
-        elif unit == 'Y':
-            return 24 * 30 * 365 * time
+# temporary
+def temp(request):
+    json_list = []
+    return JsonResponse(json_list, safe=False)
+
+
+# login check
+def login(request, username, password):
+    response = {'user_exists': True}
+    
+    user_data = ChatbotDatabase.objects.filter(username=username, password=password).values()
+    print("user_data: ", user_data)
+    
+    if len(user_data) == 0:
+        response['user_exists'] = False
+    
+    return JsonResponse(response, safe=False)
+    
+    
+# add new user
+def create_new_user(request, username, password):
+    response = {'request_info': 'user created successfully'}
+    
+    # check if user already exists
+    user_data = ChatbotDatabase.objects.filter(
+        username=username, password=password).values()
+    
+    if len(user_data) != 0:
+        response['request_info'] = 'username already exists'
+    
+    else:
+        # generate secret number for user
+        secret_number = randrange(1000000)
+        
+        # insert new user to database
+        insertedDatabase = ChatbotDatabase(username=username, password=password, secretKey=secret_number)
+        
+        # save database
+        insertedDatabase.save()
+        
+    return JsonResponse(response, safe=False)
+
+
+# Train new model
+def train_new_model(request, secret_key):
+    response = {'request_info': 'model trained successfully'}
+    
+    # check if secret key exists
+    user_data = ChatbotDatabase.objects.filter(secretKey=secret_key).values()
+    
+    if len(user_data) == 0:
+        response['request_info'] = 'user does not exist'
+        
+    else:
+        if request.method == 'POST':
+            json_data = json.loads(request.body)
+            print("json_data: ", json_data)
+            
+            create_new_model(secret_key, json_data)
+            
         else:
-            return 0
-    except:
-        return 0
-
-# Get all Crypto Symbol Names
-def getSymbols(request):
-    filter_date = datetime.utcnow() - timedelta(hours=3)
-    data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
+            response['request_info'] = 'json data not parsed correctly'
     
-    # collect count to a dictionary
-    crypto_dict = {}
-    for row in data_list:
-        crypto_symbol = row["symbol"]
-        count = row["count"]
-        marketcap = row["marketcap"]
-        percentchange = row["percent_change_24h"]
-        volume = row["volume_24h"]
+    return JsonResponse(response, safe=False)
 
 
-        if crypto_symbol not in crypto_dict:
-            crypto_dict[crypto_symbol] = {
-                "slug": row["slug"], "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"],
-                "percent_change_24h": row["percent_change_24h"], "percent_change_1h": row["percent_change_1h"]}
+# Obtain new response
+def get_response(request, secret_key, inp_message):
+    result = chat_response(secret_key, inp_message)
     
-    
-    # form new list 
-    crypto_list = []
-    for symbol, data in crypto_dict.items():
-        crypto_list.append([symbol, data])
-
-    json_list = []
-    for i in range(len(crypto_list)):
-        cur_symbol = crypto_list[i][0]
-        cur_info = crypto_list[i][1]
-        print("type: ", type(cur_info))
-
-        json_list.append(
-            {"symbol": cur_symbol, "slug": cur_info["slug"], "price": cur_info["price"], "marketcap": cur_info["marketcap"], "volume_24h": cur_info["volume_24h"],
-             "percent_change_24h": cur_info["percent_change_24h"], "percent_change_1h": cur_info["percent_change_1h"]})
-
-    return JsonResponse(json_list, safe=False)
-    
-
-# Obtains the top "n" coins and their total count in past time period
-def getNCount(request, n, period):
-    past_hours = time_convert_hours(period)
-    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
-    data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
-
-    # collect count to a dictionary
-    crypto_dict = {}
-    for row in data_list:
-        if row["symbol"] in crypto_dict:
-            crypto_dict[row["symbol"]] += row["count"]
-        else:
-            crypto_dict[row["symbol"]] = row["count"]
-
-    # form new list to sort
-    crypto_list = []
-    for symbol, count in crypto_dict.items():
-        crypto_list.append([symbol, count])
-    crypto_list.sort(key=lambda x: x[1], reverse=True)
-
-    # form JSON list
-    if n >= len(crypto_list):
-        n = len(crypto_list)
-        
-    json_list = []
-    for i in range(n):
-        json_list.append({"symbol": crypto_list[i][0], "count": crypto_list[i][1]})
-
-    return JsonResponse(json_list, safe=False)
-
-
-# Obtains the top "n" coins and their total score in past time period
-def getNScore(request, n, period):
-    past_hours = time_convert_hours(period)
-    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
-    data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
-
-    # collect count to a dictionary
-    crypto_dict = {}
-    for row in data_list:
-        crypto_symbol = row["symbol"]
-        count = row["count"]
-        marketcap = row["marketcap"]
-        percentchange = row["percent_change_24h"]
-        volume = row["volume_24h"]
-
-        try:
-            # calculate performance
-            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
-            if crypto_symbol in crypto_dict:
-                crypto_dict[crypto_symbol] += performance_score
-            else:
-                crypto_dict[crypto_symbol] = performance_score
-
-        except:
-            print("Zero marketcap for coin: ", crypto_symbol)
-
-    # form new list to sort
-    crypto_list = []
-    for symbol, score in crypto_dict.items():
-        crypto_list.append([symbol, score])
-    crypto_list.sort(key=lambda x: x[1], reverse=True)
-
-    # form JSON list
-    if n >= len(crypto_list):
-        n = len(crypto_list)
-
-    json_list = []
-    for i in range(n):
-        json_list.append(
-            {"symbol": crypto_list[i][0], "score": crypto_list[i][1]})
-
-    return JsonResponse(json_list, safe=False)
-
-
-# Obtains total count of coin "crypto_symbol" in the past time period
-def getCoinCountScoreTotal(request, crypto_symbol, period):
-    past_hours = time_convert_hours(period)
-    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
-    data_list = CryptoDatabase.objects.filter(date__gte=filter_date, symbol=crypto_symbol).values()
-    
-    acc_count = 0
-    acc_score = 0
-    for row in data_list:
-        count = row["count"]
-        marketcap = row["marketcap"]
-        percentchange = row["percent_change_24h"]
-        volume = row["volume_24h"]
-        
-        acc_count += count
-        
-        try:
-            # calculate performance
-            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
-            acc_score += performance_score
-            
-        except:
-            print("Zero marketcap for coin: ", crypto_symbol)
-    
-    json_list = {"symbol": crypto_symbol, "crypto_info: ": {"count": acc_count, "score": acc_score}}
-    return JsonResponse(json_list, safe=False)
-
-
-
-# Obtains all hourly data of top "n" coins by performance score in the past time period
-def getAllTopData(request, n, period):
-    past_hours = time_convert_hours(period)
-    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
-    data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
-
-    # collect data into dictionary
-    crypto_dict = {}
-    for row in data_list:
-        crypto_symbol = row["symbol"]
-        count = row["count"]
-        marketcap = row["marketcap"]
-        percentchange = row["percent_change_24h"]
-        volume = row["volume_24h"]
-
-        try:
-            # calculate performance
-            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
-        
-            if crypto_symbol in crypto_dict:
-                crypto_dict[crypto_symbol].append(
-                    {"date": row["date"], "slug": row["slug"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "popular_content": row["popular_content"],
-                     "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"], 
-                     "percent_change_1h": row["percent_change_1h"]})
-            else:
-                crypto_dict[crypto_symbol] = [
-                    {"date": row["date"], "slug": row["slug"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "popular_content": row["popular_content"],
-                     "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"],
-                     "percent_change_1h": row["percent_change_1h"]}]
-        except:
-            print("Zero marketcap for coin: ", crypto_symbol)
-            
-    # form new list to sort
-    crypto_list = []
-    for symbol, data in crypto_dict.items():
-        crypto_list.append([symbol, data])
-    crypto_list.sort(key=lambda x: sum(
-        [y["score"] for y in x[1]]), reverse=True)
-
-    # form JSON list
-    if n >= len(crypto_list):
-        n = len(crypto_list)
-
-    json_list = []
-    for i in range(n):
-        cur_symbol = crypto_list[i][0]
-        cur_info = crypto_list[i][1]
-        cur_info.sort(key=lambda x: x["date"], reverse=True)  # sort by date
-        
-        json_list.append(
-            {"symbol": cur_symbol, "crypto_info": cur_info})
-
-    return JsonResponse(json_list, safe=False)
-    
-
-# Obtains all hourly data of coin "crypto_symbol" in the past "hours" hours
-def getAllDataCoin(request, crypto_symbol, period):
-    past_hours = time_convert_hours(period)
-    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
-    data_list = CryptoDatabase.objects.filter(
-        date__gte=filter_date, symbol=crypto_symbol).values()
-
-    # collect data into dictionary
-    hourly_list = []
-    for row in data_list:
-        count = row["count"]
-        marketcap = row["marketcap"]
-        percentchange = row["percent_change_24h"]
-        volume = row["volume_24h"]
-        
-        try:
-            # calculate performance
-            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
-            hourly_list.append({"date": row["date"], "slug": row["slug"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "popular_content": row["popular_content"],
-                                "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"],
-                                "percent_change_1h": row["percent_change_1h"]})
-        
-        except:
-            print("Zero marketcap for coin: ", crypto_symbol)
-            
-    hourly_list.sort(key=lambda x: x["date"], reverse=True)
-    
-    json_list = [{"symbol": crypto_symbol, "crypto_info": hourly_list}]
-
-    return JsonResponse(json_list, safe=False)
-
-
-# Combines data over multiple hours together
-def getAllTopDataCombinedHours(request, n, period, combined_data):
-    past_hours = time_convert_hours(period)
-    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
-    data_list = CryptoDatabase.objects.filter(date__gte=filter_date).values()
-
-    # collect data into dictionary
-    crypto_dict = {}
-    for row in data_list:
-        crypto_symbol = row["symbol"]
-        count = row["count"]
-        marketcap = row["marketcap"]
-        percentchange = row["percent_change_24h"]
-        volume = row["volume_24h"]
-
-        try:
-            # calculate performance
-            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
-
-            if crypto_symbol in crypto_dict:
-                crypto_dict[crypto_symbol].append(
-                    {"date": row["date"], "slug": row["slug"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "popular_content": row["popular_content"],
-                     "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"],
-                     "percent_change_1h": row["percent_change_1h"]})
-            else:
-                crypto_dict[crypto_symbol] = [
-                    {"date": row["date"], "slug": row["slug"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "popular_content": row["popular_content"],
-                     "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"],
-                     "percent_change_1h": row["percent_change_1h"]}]
-        except:
-            print("Zero marketcap for coin: ", crypto_symbol)
-
-    # form new list to sort
-    crypto_list = []
-    for symbol, data in crypto_dict.items():
-        crypto_list.append([symbol, data])
-    
-    # sort by score
-    crypto_list.sort(key=lambda x: sum([y["score"] for y in x[1]]), reverse=True)
-        
-    # form JSON list
-    if n >= len(crypto_list):
-        n = len(crypto_list)
-    
-    # combine hours
-    json_list = []
-    for i in range(n):
-        cur_symbol_list = crypto_list[i][1]
-        cur_symbol_list.sort(key=lambda x: x["date"], reverse=True)  # list of dicts
-        new_symbol_list = []
-        
-        cur_iter_dict = cur_symbol_list[0]
-        cur_iter_count = 0
-        cur_iter_score = 0
-        
-        idx_counter = 0
-        cur_popular_count = 0
-        cur_popular_link = ''
-        cur_popular_content = ''
-        
-        for k in range(len(cur_symbol_list)):
-            # adds count and score together
-            cur_iter_count += cur_symbol_list[k]["count"] / combined_data
-            cur_iter_score += cur_symbol_list[k]["score"] / combined_data
-            idx_counter += 1
-            
-            if cur_symbol_list[k]["count"] >= cur_popular_count:
-                cur_popular_count = cur_symbol_list[k]["count"]
-                cur_popular_link = cur_symbol_list[k]["popular_link"]
-                cur_popular_content = cur_symbol_list[k]["popular_content"]
-            
-            if idx_counter == combined_data:
-                cur_iter_dict["count"] = cur_iter_count
-                cur_iter_dict["score"] = cur_iter_score
-                cur_iter_dict["popular_link"] = cur_popular_link
-                cur_iter_dict["popular_content"] = cur_popular_content
-                new_symbol_list.append(cur_iter_dict)
-                
-                if k + 1 >= len(cur_symbol_list):
-                    break
-                
-                # reset all variables
-                cur_iter_dict = cur_symbol_list[k+1]
-                idx_counter = 0
-                cur_iter_count = 0
-                cur_iter_score = 0
-                cur_popular_count = 0
-                cur_popular_link = ''
-                cur_popular_content = ''
-            
-        json_list.append(
-            {"symbol": crypto_list[i][0], "crypto_info": new_symbol_list})
-
-    
-    return JsonResponse(json_list, safe=False)
-
-
-# Combines data over multiple hours together
-def getAllDataCoinCombinedHours(request, crypto_symbol, period, combined_data):
-    past_hours = time_convert_hours(period)
-    filter_date = datetime.utcnow() - timedelta(hours=past_hours)
-    data_list = CryptoDatabase.objects.filter(
-        date__gte=filter_date, symbol=crypto_symbol).values()
-
-    # collect data into dictionary
-    hourly_list = []
-    for row in data_list:
-        count = row["count"]
-        marketcap = row["marketcap"]
-        percentchange = row["percent_change_24h"]
-        volume = row["volume_24h"]
-
-        try:
-            # calculate performance
-            performance_score = hyp_tan(count * (volume / marketcap) * (1 + (percentchange/100)))
-            hourly_list.append({"date": row["date"], "slug": row["slug"], "count": row["count"], "score": performance_score, "popular_link": row["popular_link"], "popular_content": row["popular_content"],
-                                "price": row["price"], "marketcap": row["marketcap"], "volume_24h": row["volume_24h"], "percent_change_24h": row["percent_change_24h"],
-                                "percent_change_1h": row["percent_change_1h"]})
-
-        except:
-            print("Zero marketcap for coin: ", crypto_symbol)
-            
-    hourly_list.sort(key=lambda x: x["date"], reverse=True)
-    
-    # combine hours
-    cur_symbol_list = hourly_list
-    new_symbol_list = []
-
-    cur_iter_dict = cur_symbol_list[0]
-    cur_iter_count = 0
-    cur_iter_score = 0
-    
-    idx_counter = 0
-    cur_popular_count = 0
-    cur_popular_link = ''
-    cur_popular_content = ''
-
-    for k in range(len(cur_symbol_list)):
-        # adds count and score together
-        cur_iter_count += cur_symbol_list[k]["count"] / combined_data
-        cur_iter_score += cur_symbol_list[k]["score"] / combined_data
-        idx_counter += 1
-        
-        if cur_symbol_list[k]["count"] >= cur_popular_count:
-            cur_popular_count = cur_symbol_list[k]["count"]
-            cur_popular_link = cur_symbol_list[k]["popular_link"]
-            cur_popular_content = cur_symbol_list[k]["popular_content"]
-        
-        if idx_counter == combined_data:
-            cur_iter_dict["count"] = cur_iter_count
-            cur_iter_dict["score"] = cur_iter_score
-            cur_iter_dict["popular_link"] = cur_popular_link
-            cur_iter_dict["popular_content"] = cur_popular_content
-            new_symbol_list.append(cur_iter_dict)
-            
-            if k + 1 >= len(cur_symbol_list):
-                break
-            
-            # reset all variables
-            cur_iter_dict = cur_symbol_list[k+1]
-            idx_counter = 0
-            cur_iter_count = 0
-            cur_iter_score = 0
-            cur_popular_count = 0
-            cur_popular_link = ''
-            cur_popular_content = ''
-    
-
-    json_list = [{"symbol": crypto_symbol, "crypto_info": new_symbol_list}]
-
-    return JsonResponse(json_list, safe=False)
-
-
+    response = {'chat_response': result}
+    return JsonResponse(response, safe=False)
