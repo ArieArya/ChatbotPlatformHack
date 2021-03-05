@@ -39,9 +39,6 @@ SECRET_KEY = django_key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-
 ALLOWED_HOSTS = ['*']
 
 
