@@ -19,13 +19,15 @@ def temp(request):
 
 # login check
 def login(request, username, password):
-    response = {'user_exists': True}
+    response = {'user_exists': True, 'secret_key': ''}
     
     user_data = ChatbotDatabase.objects.filter(username=username, password=password).values()
     print("user_data: ", user_data)
     
     if len(user_data) == 0:
         response['user_exists'] = False
+    else:
+        response['secret_key'] = user_data[0]['secretKey']
     
     return JsonResponse(response, safe=False)
     
@@ -54,7 +56,7 @@ def create_new_user(request, username, password):
     return JsonResponse(response, safe=False)
 
 
-# Train new model
+# train new model
 def train_new_model(request, secret_key):
     response = {'request_info': 'model trained successfully'}
     
@@ -67,7 +69,6 @@ def train_new_model(request, secret_key):
     else:
         if request.method == 'POST':
             json_data = json.loads(request.body)
-            print("json_data: ", json_data)
             
             create_new_model(secret_key, json_data)
             
@@ -77,7 +78,7 @@ def train_new_model(request, secret_key):
     return JsonResponse(response, safe=False)
 
 
-# Obtain new response
+# obtain new response
 def get_response(request, secret_key, inp_message):
     result = chat_response(secret_key, inp_message)
     
