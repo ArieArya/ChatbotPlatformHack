@@ -10,7 +10,7 @@ import numpy
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
 stemmer = LancasterStemmer()
-
+nltk.download('punkt')
 
 def create_new_model(secret_key, training_data):
     # save training data
