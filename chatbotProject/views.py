@@ -107,6 +107,8 @@ def get_past_data(request, secret_key, past_days):
     
     return JsonResponse(result_list, safe=False)
 
+
+# gets the most popular tags in the past n days
 def get_popular_tags(request, secret_key, past_days):
     filter_date = datetime.utcnow() - timedelta(days=past_days)
     data_list = ChatbotAnalytics.objects.filter(date__gte=filter_date, secretKey=secret_key).values()
