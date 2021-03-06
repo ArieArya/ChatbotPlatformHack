@@ -30,7 +30,7 @@ To train a new chatbot model / update an existing chatbot model, a POST request 
 ```
 /trainNewModel/secretkey=<str:secret_key>
 ```
-The POST request must contain a JSON message body of the following format:
+If the passed secret key is invalid, a HTTP 400 Bad Request will be returned. The POST request must contain a JSON message body of the following format:
 ```python
 {
   "intents": [
@@ -50,7 +50,7 @@ The POST request must contain a JSON message body of the following format:
   ]
 }
 ```
-The response will contain information about the outcome of the new model training:
+If the JSON format is incorrect, a HTTP 400 Bad Request will be raised. The response will contain information about the outcome of the new model training:
 ```python
 {'request_info': <str>} # 'model trained successfully' / 'user does not exist' / 'json data not parsed correctly'
 ```
@@ -60,7 +60,7 @@ Given an input query from a customer, a response from the chatbot can be obtaine
 ```
 /getResponse/secretkey=<str:secret_key>/message=<str:inp_message>
 ```
-The output will simply be the response of the chatbot. 
+If the passed secret key is invalid, a HTTP 400 Bad Request will be returned. Else, the output will simply be the response of the chatbot. 
 ```python
 {'chat_response': <str>} 
 ```

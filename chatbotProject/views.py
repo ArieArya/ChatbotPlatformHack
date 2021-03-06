@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import ChatbotDatabase, ChatbotAnalytics
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 import pandas as pd
 import math
 import json
@@ -16,7 +16,6 @@ def login(request, username, password):
     response = {'user_exists': True, 'secret_key': ''}
     
     user_data = ChatbotDatabase.objects.filter(username=username, password=password).values()
-    print("user_data: ", user_data)
     
     if len(user_data) == 0:
         response['user_exists'] = False
@@ -52,23 +51,21 @@ def create_new_user(request, username, password):
 
 # train new model
 def train_new_model(request, secret_key):
-    response = {'request_info': 'model trained successfully'}
     
     # check if secret key exists
     user_data = ChatbotDatabase.objects.filter(secretKey=secret_key).values()
-    
     if len(user_data) == 0:
-        response['request_info'] = 'user does not exist'
+        return HttpResponseBadRequest('secret key does not exist')
         
     else:
         if request.method == 'POST':
             json_data = json.loads(request.body)
-            
             create_new_model(secret_key, json_data)
             
         else:
-            response['request_info'] = 'json data not parsed correctly'
+            return HttpResponseBadRequest('json not parsed correctly')
     
+    response = {'request_info': 'model trained successfully'}
     return JsonResponse(response, safe=False)
 
 
@@ -77,7 +74,7 @@ def get_response(request, secret_key, inp_message):
     # check if secret key exists
     user_data = ChatbotDatabase.objects.filter(secretKey=secret_key).values()
     if len(user_data) == 0:
-        response = {'chat_response': ''}
+        return HttpResponseBadRequest('secret key does not exist')
     
     else:
         chat_result, tag_result = chat_response(secret_key, inp_message)
