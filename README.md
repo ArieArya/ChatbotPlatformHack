@@ -52,7 +52,7 @@ The POST request must contain a JSON message body of the following format:
 ```
 The response will contain information about the outcome of the new model training:
 ```python
-{'request_info': <str>} # output can be 'model trained successfully' / 'user does not exist' / 'json data not parsed correctly'
+{'request_info': <str>} # 'model trained successfully' / 'user does not exist' / 'json data not parsed correctly'
 ```
 
 ## Get Chatbot Response
