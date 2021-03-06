@@ -21,8 +21,6 @@ urlpatterns = [
     # For admin purposes
     path('admin/', admin.site.urls),
     
-    path('query/', v.temp),
-    
     # Login
     path('login/username=<str:username>/password=<str:password>', v.login),
     
@@ -36,5 +34,8 @@ urlpatterns = [
     path('getResponse/secretkey=<str:secret_key>/message=<str:inp_message>', v.get_response),
     
     # Obtain past historical data
-    path('getPastData/secretkey=<str:secret_key>/pastDays=<int:past_days>', v.get_past_data)
+    path('getPastData/secretkey=<str:secret_key>/pastDays=<int:past_days>', v.get_past_data),
+    
+    # Obtain most popular tags
+    path('getPopularTags/secretkey=<str:secret_key>/pastDays=<int:past_days>', v.get_popular_tags)
 ]

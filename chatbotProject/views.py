@@ -11,12 +11,6 @@ from create_new_model import create_new_model
 from chat_response import chat_response
 
 
-# temporary
-def temp(request):
-    json_list = []
-    return JsonResponse(json_list, safe=False)
-
-
 # login check
 def login(request, username, password):
     response = {'user_exists': True, 'secret_key': ''}
@@ -34,14 +28,14 @@ def login(request, username, password):
     
 # add new user
 def create_new_user(request, username, password):
-    response = {'request_info': 'user created successfully'}
+    response = {'request_success': True}
     
     # check if user already exists
     user_data = ChatbotDatabase.objects.filter(
         username=username, password=password).values()
     
     if len(user_data) != 0:
-        response['request_info'] = 'username already exists'
+        response['request_success'] = False
     
     else:
         # generate secret number for user
@@ -113,3 +107,23 @@ def get_past_data(request, secret_key, past_days):
     
     return JsonResponse(result_list, safe=False)
 
+def get_popular_tags(request, secret_key, past_days):
+    filter_date = datetime.utcnow() - timedelta(days=past_days)
+    data_list = ChatbotAnalytics.objects.filter(date__gte=filter_date, secretKey=secret_key).values()
+    
+    tag_counter = {}
+    for row in data_list:
+        tag = row['tag']
+        
+        if tag in tag_counter:
+            tag_counter[tag] += 1
+        else:
+            tag_counter[tag] = 1
+    
+    result_list = []
+    for tag_key, count in tag_counter.items():
+        result_list.append({'tag':tag_key, 'count': count})
+        
+    result_list.sort(key = lambda x: x['count'], reverse=True)
+
+    return JsonResponse(result_list, safe=False)
