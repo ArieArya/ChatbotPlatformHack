@@ -77,7 +77,6 @@ def create_new_model(secret_key, training_data):
                     input_shape=(None, len(training[0]))))
     model.add(Dense(32, activation='relu'))
     model.add(Dense(32, activation='relu'))
-    model.add(Dense(32, activation='relu'))
     model.add(Dense(len(output[0]), activation='softmax'))
     model.compile(optimizer='adam',
                     loss='categorical_crossentropy', metrics=['accuracy'])
