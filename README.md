@@ -111,6 +111,7 @@ The output will be a list of tags and their corresponding count, sorted in desce
   {'tag': <str>, 'count': <int>}
 ]
 ```
+```python
 An example would be:
 [
   {'tag': 'books', 'count': 19},
@@ -119,3 +120,4 @@ An example would be:
   ...,
   {'tag': 'sports', 'count': 2}
 ]
+```
