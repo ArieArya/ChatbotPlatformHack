@@ -111,8 +111,8 @@ The output will be a list of tags and their corresponding count, sorted in desce
   {'tag': <str>, 'count': <int>}
 ]
 ```
-```python
 An example would be:
+```python
 [
   {'tag': 'books', 'count': 19},
   {'tag': 'food', 'count': 17},
