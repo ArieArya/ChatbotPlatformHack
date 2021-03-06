@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import ChatbotDatabase
+from .models import ChatbotDatabase, ChatbotAnalytics
 from django.http import JsonResponse
 import pandas as pd
 import math
@@ -80,7 +80,36 @@ def train_new_model(request, secret_key):
 
 # obtain new response
 def get_response(request, secret_key, inp_message):
-    result = chat_response(secret_key, inp_message)
+    # check if secret key exists
+    user_data = ChatbotDatabase.objects.filter(secretKey=secret_key).values()
+    if len(user_data) == 0:
+        response = {'chat_response': ''}
     
-    response = {'chat_response': result}
+    else:
+        chat_result, tag_result = chat_response(secret_key, inp_message)
+        response = {'chat_response': chat_result}
+        
+        # store in analytics database
+        cur_date = datetime.utcnow()
+        analyticsDatabase = ChatbotAnalytics(secretKey=secret_key, date=cur_date, tag=tag_result, question=inp_message, response=chat_result)
+        analyticsDatabase.save()
+        
     return JsonResponse(response, safe=False)
+
+
+# gets past queries and information
+def get_past_data(request, secret_key, past_days):
+    filter_date = datetime.utcnow() - timedelta(days=past_days)
+    data_list = ChatbotAnalytics.objects.filter(date__gte=filter_date, secretKey=secret_key).values()
+    
+    result_list = []
+    for row in data_list:
+        date = row['date']
+        question = row['question']
+        tag = row['tag']
+        response = row['response']
+        
+        result_list.append({'date': date, 'question': question, 'tag': tag, 'response': response})
+    
+    return JsonResponse(result_list, safe=False)
+

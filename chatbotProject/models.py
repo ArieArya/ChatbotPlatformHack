@@ -11,4 +11,12 @@ class ChatbotDatabase(models.Model):
         return self.name
 
 
+class ChatbotAnalytics(models.Model):
+    secretKey = models.TextField()
+    date = models.DateTimeField()
+    tag = models.TextField()
+    question = models.TextField()
+    response = models.TextField()
     
+    def __str__(self):
+        return self.name

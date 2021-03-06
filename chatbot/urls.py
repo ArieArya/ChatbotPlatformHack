@@ -33,6 +33,8 @@ urlpatterns = [
     path('trainNewModel/secretkey=<str:secret_key>', v.train_new_model),
 
     # Obtain response from model
-    path('getResponse/secretkey=<str:secret_key>/message=<str:inp_message>', v.get_response)
+    path('getResponse/secretkey=<str:secret_key>/message=<str:inp_message>', v.get_response),
     
+    # Obtain past historical data
+    path('getPastData/secretkey=<str:secret_key>/pastDays=<int:past_days>', v.get_past_data)
 ]

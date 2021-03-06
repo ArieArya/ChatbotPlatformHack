@@ -42,10 +42,10 @@ def chat_response(secret_key, words_query):
                     responses = tg['responses']
 
             answer = random.choice(responses)
-        return answer
+        return answer, tag
             
     except:
-        return ""
+        return "", ""
 
 
 def bag_of_words(s, words):
