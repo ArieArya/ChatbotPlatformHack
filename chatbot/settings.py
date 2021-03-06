@@ -21,8 +21,6 @@ with open(dir_path + '/secrets.txt') as f:
 secrets = [x.strip() for x in secret]
 
 django_key = secrets[0]
-access_key = secrets[1]
-secret_key = secrets[2]
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -52,8 +50,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'chatbotProject.apps.ChatbotprojectConfig',
-    'django_celery_results',
-    'django_celery_beat',
     'corsheaders',
 ]
 
@@ -138,18 +134,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# CELERY STUFF
-
-# in form sqs://aws_access_key_id:aws_secret_access_key@ (note the @ at the end)
-
-CELERY_BROKER_URL = "sqs://{access_key}:{secret_key}@".format(
-    access_key=urllib.parse.quote(access_key, safe=''),
-    secret_key=urllib.parse.quote(secret_key, safe=''),
-)
-
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    'region': 'eu-west-2',
-}
 
 
