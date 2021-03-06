@@ -52,7 +52,7 @@ If the passed secret key is invalid, a HTTP 400 Bad Request will be returned. Th
 ```
 If the JSON format is incorrect, a HTTP 400 Bad Request will be raised. The response will contain information about the outcome of the new model training:
 ```python
-{'request_info': <str>} # 'model trained successfully' / 'user does not exist' / 'json data not parsed correctly'
+{'request_info': <str>}
 ```
 
 ## Get Chatbot Response
