@@ -106,4 +106,4 @@ def get_alternatives(inp_text, numParaphrases):
             return alternatives
 
         except:
-            time.sleep(5)
+            time.sleep(2)
