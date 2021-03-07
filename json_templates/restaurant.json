@@ -1,5 +1,15 @@
 {
     "intents": [{
+            "tag": "openingHours",
+            "patterns": ["what time do you usually open?", "when are you open?"],
+            "responses": ["we are open from 8am to 10pm every day"]
+        },
+        {
+            "tag": "food",
+            "patterns": ["What is the favourite food here?", "what food do you recommend?"],
+            "responses": ["our top dishes include the classic burger and the pineapple pizza"]
+        },
+        {
             "tag": "greeting",
             "patterns": ["Hi", "Is anyone there?", "Hello", "Good day"],
             "responses": ["Hello, how are you?", "Good to see you again!", "Hi there, what questions can I answer for you today?"]
@@ -14,17 +24,6 @@
             "tag": "farewell",
             "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
             "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
-        },
-        {
-            "tag": "openingHours",
-            "patterns": ["what time do you usually open?", "when are you open?"],
-            "responses": ["we are open from 8am to 10pm every day"]
-        },
-        {
-            "tag": "food",
-            "patterns": ["What is the favourite food here?", "what food do you recommend?"],
-            "responses": ["our top dishes include the classic burger and the pineapple pizza"]
         }
-
     ]
 }

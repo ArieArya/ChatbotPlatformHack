@@ -1,22 +1,5 @@
 {
     "intents": [{
-            "tag": "greeting",
-            "patterns": ["Hi", "Is anyone there?", "Hello", "Good day"],
-            "responses": ["Hello, how are you?", "Good to see you again!", "Hi there, what questions can I answer for you today?"]
-        },
-        {
-            "tag": "greetingResponse",
-            "patterns": ["How are you?", "How is everything?", "How is life?", "You good?", "You doing ok?", "Hey how are you?"],
-            "responses": ["I'm doing great, thank you", "I'm doing fantastic!", "I'm feeling great!"]
-        },
-
-        {
-            "tag": "farewell",
-            "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
-            "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
-        },
-
-        {
             "tag": "designType",
             "patterns": ["what design do you mainly focus on?", "what are some of the designs you work on?"],
             "responses": ["our work is typically focused on creating modern and contemporary furnitures"]
@@ -32,6 +15,22 @@
             "tag": "awards",
             "patterns": ["do you have any notable awards for your desings?", "have your designs won any awards?"],
             "responses": ["yes, we won the 2020 best innovative architecture award for our custom-made chair"]
+        },
+        {
+            "tag": "greeting",
+            "patterns": ["Hi", "Is anyone there?", "Hello", "Good day"],
+            "responses": ["Hello, how are you?", "Good to see you again!", "Hi there, what questions can I answer for you today?"]
+        },
+        {
+            "tag": "greetingResponse",
+            "patterns": ["How are you?", "How is everything?", "How is life?", "You good?", "You doing ok?", "Hey how are you?"],
+            "responses": ["I'm doing great, thank you", "I'm doing fantastic!", "I'm feeling great!"]
+        },
+
+        {
+            "tag": "farewell",
+            "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
+            "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
         }
     ]
 }

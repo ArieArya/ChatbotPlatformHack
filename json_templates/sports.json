@@ -1,5 +1,16 @@
 {
     "intents": [{
+            "tag": "sports",
+            "patterns": ["what sports do you focus on?", "which sport does this store focus on?"],
+            "responses": ["we mainly focus on sportswear for golf"]
+        },
+
+        {
+            "tag": "price",
+            "patterns": ["how much does an average golf club cost?", "what is the price of a golf club"],
+            "responses": ["our iconic golf clubs start from $80, depending on the material"]
+        },
+        {
             "tag": "greeting",
             "patterns": ["Hi", "Is anyone there?", "Hello", "Good day"],
             "responses": ["Hello, how are you?", "Good to see you again!", "Hi there, what questions can I answer for you today?"]
@@ -14,18 +25,6 @@
             "tag": "farewell",
             "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
             "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
-        },
-
-        {
-            "tag": "sports",
-            "patterns": ["what sports do you focus on?", "which sport does this store focus on?"],
-            "responses": ["we mainly focus on sportswear for golf"]
-        },
-
-        {
-            "tag": "price",
-            "patterns": ["how much does an average golf club cost?", "what is the price of a golf club"],
-            "responses": ["our iconic golf clubs start from $80, depending on the material"]
         }
     ]
 }
