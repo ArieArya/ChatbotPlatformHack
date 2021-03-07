@@ -80,7 +80,7 @@ def create_new_model(secret_key, model_name, training_data):
     model.add(Dense(len(output[0]), activation='softmax'))
     model.compile(optimizer='adam',
                     loss='categorical_crossentropy', metrics=['accuracy'])
-    model.fit(x=training, y=output, epochs=1000, batch_size=8)
+    model.fit(x=training, y=output, epochs=1000, batch_size=8, verbose=0)
     
     model_id = 'model-' + str(secret_key) + '-' + str(model_name) + '.h5'
     model_dir = 'saved_models/' + model_id

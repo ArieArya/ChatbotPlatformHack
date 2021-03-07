@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from random import randrange
 from create_new_model import create_new_model
 from chat_response import chat_response
+from paraphrase_preprocess import preprocess_train_data
 import uuid
 
 
@@ -68,7 +69,9 @@ def train_new_model(request, secret_key, model_name):
     else:
         if request.method == 'POST':
             json_data = json.loads(request.body)
-            create_new_model(secret_key, model_name, json_data)
+            train_data = preprocess_train_data(json_data)
+            
+            create_new_model(secret_key, model_name, train_data)
             
             # insert new bot to database
             chatbotDatabase = ChatbotDatabase(secretKey=secret_key, botName=model_name)
