@@ -89,7 +89,7 @@ def train_new_model(request, secret_key, model_name):
 def delete_model(request, secret_key, model_name):
     try:
         # delete model from database
-        curChatbotDatabase = ChatbotDatabase.objects.filter(botName=model_name).delete()
+        curChatbotDatabase = ChatbotDatabase.objects.filter(secretKey=secret_key, botName=model_name).delete()
     
         response = {'request_info': 'model deleted successfully'}
         return JsonResponse(response, safe=False)
