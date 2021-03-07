@@ -97,17 +97,17 @@ def get_alternatives(inp_text, numParaphrases):
     while True:
         try:
             response = requests.request("POST", url, data=payload, headers=headers)
-            print("response: ", response)
             result = response.json()[0]['paraphrases']
 
             alternatives = []
 
             for data in result:
-                alternatives.append(data['alt'])
+                alt_words = data['alt'].capitalize().split(' ')
+                alt_text = ' '.join([w.upper() if w == 'i' else w for w in alt_words])
+                alternatives.append(alt_text)
 
             return alternatives
 
         except:
-            print("collision detected")
             sleep_time = randrange(10)
             time.sleep(sleep_time)
