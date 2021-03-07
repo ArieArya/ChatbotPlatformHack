@@ -55,6 +55,16 @@ If the JSON format is incorrect, a HTTP 400 Bad Request will be raised. The resp
 {'request_info': <str>}
 ```
 
+## Delete Chatbot Model
+You can delete a chatbot model by making the following API call:
+```
+/deleteModel/secretkey=<str:secret_key>/modelName=<str:model_name>
+```
+The response contains information on the result of the API call:
+```python
+{'request_info': <str>} # either 'model deleted successfully' or 'model does not exist'
+```
+
 ## Get Chatbot Response
 Given an input query from a customer, a response from the chatbot can be obtained through the following API call:
 ```

@@ -85,6 +85,20 @@ def train_new_model(request, secret_key, model_name):
     return JsonResponse(response, safe=False)
 
 
+# delete trained model
+def delete_model(request, secret_key, model_name):
+    try:
+        # delete model from database
+        curChatbotDatabase = ChatbotDatabase.objects.filter(botName=model_name).delete()
+    
+        response = {'request_info': 'model deleted successfully'}
+        return JsonResponse(response, safe=False)
+
+    except:
+        response = {'request_info': 'model not found'}
+        return JsonResponse(response, safe=False)
+
+
 # obtain new response
 def get_response(request, secret_key, model_name, inp_message):
     # check if secret key exists
