@@ -29,6 +29,9 @@ urlpatterns = [
     
     # Train new model
     path('trainNewModel/secretkey=<str:secret_key>/modelName=<str:model_name>', v.train_new_model),
+    
+    # Delete trained model
+    path('deleteModel/secretkey=<str:secret_key>/modelName=<str:model_name>', v.delete_model),
 
     # Obtain response from model
     path('getResponse/secretkey=<str:secret_key>/modelName=<str:model_name>/message=<str:inp_message>', v.get_response),
