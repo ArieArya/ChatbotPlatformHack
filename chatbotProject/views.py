@@ -64,9 +64,9 @@ def train_new_model(request, secret_key, model_name):
     else:
         if request.method == 'POST':
             json_data = json.loads(request.body)
-            train_data = preprocess_train_data(json_data)
+            # train_data = preprocess_train_data(json_data)
             
-            create_new_model(secret_key, model_name, train_data)
+            create_new_model(secret_key, model_name, json_data)
             
             # check if model with same name already exists
             chatbot_data = ChatbotDatabase.objects.filter(secretKey=secret_key, botName=model_name).values()
