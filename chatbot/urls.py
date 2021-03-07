@@ -37,5 +37,8 @@ urlpatterns = [
     path('getPastData/secretkey=<str:secret_key>/modelName=<str:model_name>/pastDays=<int:past_days>', v.get_past_data),
     
     # Obtain most popular tags
-    path('getPopularTags/secretkey=<str:secret_key>/modelName=<str:model_name>/pastDays=<int:past_days>', v.get_popular_tags)
+    path('getPopularTags/secretkey=<str:secret_key>/modelName=<str:model_name>/pastDays=<int:past_days>', v.get_popular_tags),
+    
+    # Obtain json templates
+    path('getTemplate/templateName=<str:template_name>', v.get_template)
 ]

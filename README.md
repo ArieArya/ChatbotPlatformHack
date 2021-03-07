@@ -66,6 +66,46 @@ If the passed secret key is invalid or the model name does not exist, a HTTP 400
 ```
 Note that if an invalid secret key is given, the chatbot response would be an empty string ('').
 
+## Get JSON Templates
+Tailored JSON templates for specific use cases are provided for new chatbots. This can be accessed through the below API call:
+```python
+/getTemplate/templateName=basic
+```
+This will return a JSON containing the information of the chosen template:
+```python
+{
+  "intents": [
+      {"tag": <str>, 
+       "patterns": <str list>,
+       "responses": <str list>},
+       
+      {"tag": <str>, 
+       "patterns": <str list>,
+       "responses": <str list>}, 
+       
+       ...,
+       
+       {"tag": <str>, 
+       "patterns": <str list>,
+       "responses": <str list>}
+  ]
+}
+```
+Currently, the supported templates include:
+<ul>
+  <li>basic</li>
+  <li>bookseller</li>
+  <li>cafe</li>
+  <li>designer</li>
+  <li>fashion</li>
+  <li>gameshop</li>
+  <li>hospitality</li>
+  <li>personal-portfolio</li>
+  <li>restaurant</li>
+  <li>retailer</li>
+  <li>sports</li>
+  <li>traveladvisor</li>
+</ul>
 
 ## Get Past Analytical Data
 In addition to training models and predicting output through the ML model, the back-end stores data of all questions asked to a particular client for possible

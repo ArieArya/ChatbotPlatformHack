@@ -10,6 +10,7 @@ from random import randrange
 from create_new_model import create_new_model
 from chat_response import chat_response
 from paraphrase_preprocess import preprocess_train_data
+from get_template import get_template_json
 import uuid
 
 
@@ -148,3 +149,9 @@ def get_popular_tags(request, secret_key, model_name, past_days):
     result_list.sort(key = lambda x: x['count'], reverse=True)
 
     return JsonResponse(result_list, safe=False)
+
+
+# gets the default json template
+def get_template(request, template_name):
+    json_template = get_template_json(template_name)
+    return JsonResponse(json_template, safe=False)
