@@ -1,0 +1,37 @@
+{
+    "intents": [{
+            "tag": "greeting",
+            "patterns": ["Hi", "Is anyone there?", "Hello", "Good day"],
+            "responses": ["Hello, how are you?", "Good to see you again!", "Hi there, what questions can I answer for you today?"]
+        },
+        {
+            "tag": "greetingResponse",
+            "patterns": ["How are you?", "How is everything?", "How is life?", "You good?", "You doing ok?", "Hey how are you?"],
+            "responses": ["I'm doing great, thank you", "I'm doing fantastic!", "I'm feeling great!"]
+        },
+
+        {
+            "tag": "farewell",
+            "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
+            "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
+        },
+
+        {
+            "tag": "coffee",
+            "patterns": ["what coffee do you serve here?", "what types of coffee do you have?"],
+            "responses": ["we have latte, frappe, espresso, and many more!"]
+        },
+
+        {
+            "tag": "desserts",
+            "patterns": ["what are some of your favourite desserts?", "which desserts are the best here?"],
+            "responses": ["our favourite desserts are the chocolate cake and the strawberry pancakes"]
+        },
+
+        {
+            "tag": "openingHours",
+            "patterns": ["what time do you usually open?", "when are you open?"],
+            "responses": ["we are open from 8am to 10pm every day"]
+        }
+    ]
+}

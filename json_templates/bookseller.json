@@ -14,6 +14,30 @@
             "tag": "farewell",
             "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
             "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
+        },
+
+        {
+            "tag": "bookvariety",
+            "patterns": ["what types of book do you sell?", "what genre of books do you have in store?"],
+            "responses": ["we have genres ranging from classical art, historical, scientific, and novels"]
+        },
+
+        {
+            "tag": "popularbook",
+            "patterns": ["what is the favourite book right now?", "whats a trendy book for sale?"],
+            "responses": ["the top reader's choice at the moment is the Hitchhiker's Guide to the Galaxy"]
+        },
+
+        {
+            "tag": "price",
+            "patterns": ["how much does an average book cost in this store?", "whats the price of an average book"],
+            "responses": ["a scientific book typically costs about $50, though novels and magazines cost considerably less"]
+        },
+
+        {
+            "tag": "openingHours",
+            "patterns": ["what time do you usually open?", "when are you open?"],
+            "responses": ["we are open from 8am to 10pm every day"]
         }
     ]
 }

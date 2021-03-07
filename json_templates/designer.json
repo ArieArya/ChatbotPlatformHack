@@ -14,6 +14,24 @@
             "tag": "farewell",
             "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
             "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
+        },
+
+        {
+            "tag": "designType",
+            "patterns": ["what design do you mainly focus on?", "what are some of the designs you work on?"],
+            "responses": ["our work is typically focused on creating modern and contemporary furnitures"]
+        },
+
+        {
+            "tag": "price",
+            "patterns": ["how much do you charge for your designs?", "whats the average cost of your products?"],
+            "responses": ["as we are selling luxurious furniture items, our goods typically cost above $5000 per medium-sized furniture"]
+        },
+
+        {
+            "tag": "awards",
+            "patterns": ["do you have any notable awards for your desings?", "have your designs won any awards?"],
+            "responses": ["yes, we won the 2020 best innovative architecture award for our custom-made chair"]
         }
     ]
 }

@@ -14,6 +14,18 @@
             "tag": "farewell",
             "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
             "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
+        },
+
+        {
+            "tag": "openingHours",
+            "patterns": ["what time do you usually open?", "when are you open?"],
+            "responses": ["we are open from 8am to 10pm every day"]
+        },
+
+        {
+            "tag": "products",
+            "patterns": ["what do you sell here?", "what products do you have for sale?"],
+            "responses": ["our products range from daily essentials, to groceries and food"]
         }
     ]
 }

@@ -14,6 +14,19 @@
             "tag": "farewell",
             "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
             "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
+        },
+
+        {
+            "tag": "destination",
+            "patterns": ["Which destinations and locations do you serve?", "which destinations do you focus on?"],
+            "responses": ["we serve destinations from around the world, from North America, Europe, and Asia"]
+        },
+
+        {
+            "tag": "price",
+            "patterns": ["what is the price for your service?", "how much does a tour guide cost?"],
+            "responses": ["we charge depending on the location. In Europe, an aveage tour guide costs approximately $20"]
         }
+
     ]
 }

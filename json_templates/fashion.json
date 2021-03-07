@@ -14,6 +14,24 @@
             "tag": "farewell",
             "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
             "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
+        },
+
+        {
+            "tag": "fashionType",
+            "patterns": ["what types of clothes do you work on?", "what clothes do you have for sale?"],
+            "responses": ["we mainly work on suits and formal fashion"]
+        },
+
+        {
+            "tag": "price",
+            "patterns": ["how much does an average suit cost?", "what is the price of your suit?"],
+            "responses": ["our two-piece suit cost on average $75, though this will depend on its material"]
+        },
+
+        {
+            "tag": "openingHours",
+            "patterns": ["what time do you usually open?", "when are you open?"],
+            "responses": ["we are open from 8am to 10pm every day"]
         }
     ]
 }

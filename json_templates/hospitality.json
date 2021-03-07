@@ -14,6 +14,18 @@
             "tag": "farewell",
             "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
             "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
+        },
+
+        {
+            "tag": "roomType",
+            "patterns": ["what types of room do you have?"],
+            "responses": ["our room ranges from Deluxe, Queen, and Suite"]
+        },
+
+        {
+            "tag": "price",
+            "patterns": ["what's the price of staying per night?"],
+            "responses": ["our Suite bedroom costs $350 per room night, whilst our Deluxe room costs $600 per room night"]
         }
     ]
 }

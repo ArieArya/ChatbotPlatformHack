@@ -14,6 +14,24 @@
             "tag": "farewell",
             "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
             "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
+        },
+
+        {
+            "tag": "name",
+            "patterns": ["whats your name?", "who are you?"],
+            "responses": ["my name is John", "I'm John, nice to meet you!"]
+        },
+
+        {
+            "tag": "age",
+            "patterns": ["how old are you?", "what is your age?"],
+            "responses": ["I am 25 years old"]
+        },
+
+        {
+            "tag": "hobby",
+            "patterns": ["what are some of your hobbies?", "what do you love to do?"],
+            "responses": ["my hobbies are reading and playing tennis"]
         }
     ]
 }
