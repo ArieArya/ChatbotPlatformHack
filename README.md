@@ -28,9 +28,10 @@ The response has the following format:
 ## Train new chatbot model / Update existing chatbot model
 To train a new chatbot model / update an existing chatbot model, a POST request must be made to the following url:
 ```
-/trainNewModel/secretkey=<str:secret_key>
+/trainNewModel/secretkey=<str:secret_key>/modelName=<str:model_name>
 ```
-If the passed secret key is invalid, a HTTP 400 Bad Request will be raised. The POST request must contain a JSON message body of the following format:
+If the passed secret key is invalid or if the chatbot name already exists, a HTTP 400 Bad Request will be raised. The POST request must contain a JSON message body of the 
+following format:
 ```python
 {
   "intents": [
@@ -58,9 +59,9 @@ If the JSON format is incorrect, a HTTP 400 Bad Request will be raised. The resp
 ## Get Chatbot Response
 Given an input query from a customer, a response from the chatbot can be obtained through the following API call:
 ```
-/getResponse/secretkey=<str:secret_key>/message=<str:inp_message>
+/getResponse/secretkey=<str:secret_key>/modelName=<str:model_name>/message=<str:inp_message>
 ```
-If the passed secret key is invalid, a HTTP 400 Bad Request will be raised. Else, the output will simply be the response of the chatbot. 
+If the passed secret key is invalid or the model name does not exist, a HTTP 400 Bad Request will be raised. Else, the output will simply be the response of the chatbot. 
 ```python
 {'chat_response': <str>} 
 ```
@@ -71,7 +72,7 @@ Note that if an invalid secret key is given, the chatbot response would be an em
 In addition to training models and predicting output through the ML model, the back-end stores data of all questions asked to a particular client for possible
 analytics applications. To obtain all questions asked to a client in the past n days, the API call below should be made:
 ```
-/getPastData/secretkey=<str:secret_key>/pastDays=<int:past_days>
+/getPastData/secretkey=<str:secret_key>/modelName=<str:model_name>/pastDays=<int:past_days>
 ```
 The output of the API call would be a list of all questions, tags, and chatbot responses in the last 'past_days' days:
 ```python
@@ -99,7 +100,7 @@ The output of the API call would be a list of all questions, tags, and chatbot r
 In addition to obtaining raw past analytical data on the questions asked and the corresponding tag marked by the model, the API allows you to obtain the most popular
 tags in the past n days (for further analytics application). The following API call must be made:
 ```
-/getPopularTags/secretkey=<str:secret_key>/pastDays=<int:past_days>
+/getPopularTags/secretkey=<str:secret_key>/modelName=<str:model_name>/pastDays=<int:past_days>
 ```
 The output will be a list of tags and their corresponding count, sorted in descending order of their counts (i.e. most popular tags appear in the front of the list).
 ```python

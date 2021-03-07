@@ -12,9 +12,9 @@ from nltk.stem.lancaster import LancasterStemmer
 stemmer = LancasterStemmer()
 nltk.download('punkt')
 
-def create_new_model(secret_key, training_data):
+def create_new_model(secret_key, model_name, training_data):
     # save training data
-    training_data_dir = 'saved_training_data/data-' + str(secret_key) + '.json'
+    training_data_dir = 'saved_training_data/data-' + str(secret_key) + '-' +  str(model_name) + '.json'
     with open(training_data_dir, "w+") as f:
         json.dump(training_data, f)
     
@@ -66,7 +66,7 @@ def create_new_model(secret_key, training_data):
     output = numpy.array(output)
     
     # saved parsed data
-    parsed_data_dir = 'saved_parsed_data/data-' + str(secret_key) + '.pickle'
+    parsed_data_dir = 'saved_parsed_data/data-' + str(secret_key) + '-' + str(model_name) + '.pickle'
     
     with open(parsed_data_dir, "wb") as f:
         pickle.dump((words, labels, training, output), f)
@@ -82,8 +82,7 @@ def create_new_model(secret_key, training_data):
                     loss='categorical_crossentropy', metrics=['accuracy'])
     model.fit(x=training, y=output, epochs=1000, batch_size=8)
     
-    
-    model_id = 'model-' + str(secret_key) + '.h5'
+    model_id = 'model-' + str(secret_key) + '-' + str(model_name) + '.h5'
     model_dir = 'saved_models/' + model_id
     model.save(model_dir)
 

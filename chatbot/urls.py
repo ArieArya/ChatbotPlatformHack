@@ -28,14 +28,14 @@ urlpatterns = [
     path('createUser/username=<str:username>/password=<str:password>', v.create_new_user),
     
     # Train new model
-    path('trainNewModel/secretkey=<str:secret_key>', v.train_new_model),
+    path('trainNewModel/secretkey=<str:secret_key>/modelName=<str:model_name>', v.train_new_model),
 
     # Obtain response from model
-    path('getResponse/secretkey=<str:secret_key>/message=<str:inp_message>', v.get_response),
+    path('getResponse/secretkey=<str:secret_key>/modelName=<str:model_name>/message=<str:inp_message>', v.get_response),
     
     # Obtain past historical data
-    path('getPastData/secretkey=<str:secret_key>/pastDays=<int:past_days>', v.get_past_data),
+    path('getPastData/secretkey=<str:secret_key>/modelName=<str:model_name>/pastDays=<int:past_days>', v.get_past_data),
     
     # Obtain most popular tags
-    path('getPopularTags/secretkey=<str:secret_key>/pastDays=<int:past_days>', v.get_popular_tags)
+    path('getPopularTags/secretkey=<str:secret_key>/modelName=<str:model_name>/pastDays=<int:past_days>', v.get_popular_tags)
 ]

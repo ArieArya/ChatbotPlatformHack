@@ -13,19 +13,19 @@ stemmer = LancasterStemmer()
 nltk.download('punkt')
 
 
-def chat_response(secret_key, words_query):
+def chat_response(secret_key, model_name, words_query):
     try:
         # obtain saved model
-        model_dir = 'saved_models/model-' + str(secret_key) + '.h5'
+        model_dir = 'saved_models/model-' + str(secret_key) + '-' + str(model_name) + '.h5'
         model = load_model(model_dir)
         
         # obtain parsed data
-        parsed_data_dir = 'saved_parsed_data/data-' + str(secret_key) + '.pickle'
+        parsed_data_dir = 'saved_parsed_data/data-' + str(secret_key) + '-' + str(model_name) + '.pickle'
         with open(parsed_data_dir, "rb") as f:
             words, labels, training, output = pickle.load(f)
             
         # obtain json training data
-        data_dir = 'saved_training_data/data-' + str(secret_key) + '.json'
+        data_dir = 'saved_training_data/data-' + str(secret_key) + '-' + str(model_name) + '.json'
         with open(data_dir) as file:
             data = json.load(file)
             

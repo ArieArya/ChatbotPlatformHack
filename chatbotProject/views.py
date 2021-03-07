@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import ChatbotDatabase, ChatbotAnalytics
+from .models import UserDatabase, ChatbotAnalytics, ChatbotDatabase
 from django.http import JsonResponse, HttpResponseBadRequest
 import pandas as pd
 import math
@@ -9,13 +9,14 @@ from datetime import datetime, timedelta
 from random import randrange
 from create_new_model import create_new_model
 from chat_response import chat_response
+import uuid
 
 
 # login check
 def login(request, username, password):
     response = {'user_exists': True, 'secret_key': ''}
     
-    user_data = ChatbotDatabase.objects.filter(username=username, password=password).values()
+    user_data = UserDatabase.objects.filter(username=username, password=password).values()
     
     if len(user_data) == 0:
         response['user_exists'] = False
@@ -30,7 +31,7 @@ def create_new_user(request, username, password):
     response = {'request_success': True}
     
     # check if user already exists
-    user_data = ChatbotDatabase.objects.filter(
+    user_data = UserDatabase.objects.filter(
         username=username, password=password).values()
     
     if len(user_data) != 0:
@@ -38,10 +39,10 @@ def create_new_user(request, username, password):
     
     else:
         # generate secret number for user
-        secret_number = randrange(1000000)
+        secret_number = uuid.uuid1()
         
         # insert new user to database
-        insertedDatabase = ChatbotDatabase(username=username, password=password, secretKey=secret_number)
+        insertedDatabase = UserDatabase(username=username, password=password, secretKey=secret_number)
         
         # save database
         insertedDatabase.save()
@@ -50,48 +51,68 @@ def create_new_user(request, username, password):
 
 
 # train new model
-def train_new_model(request, secret_key):
+def train_new_model(request, secret_key, model_name):
     
     # check if secret key exists
-    user_data = ChatbotDatabase.objects.filter(secretKey=secret_key).values()
+    user_data = UserDatabase.objects.filter(secretKey=secret_key).values()
+    
+    # check if model with same name already exists
+    chatbot_data = ChatbotDatabase.objects.filter(secretKey=secret_key, botName=model_name).values()
+    
     if len(user_data) == 0:
         return HttpResponseBadRequest('secret key does not exist')
+    
+    elif len(chatbot_data) > 0:
+        return HttpResponseBadRequest('chatbot name already exists')
         
     else:
         if request.method == 'POST':
             json_data = json.loads(request.body)
-            create_new_model(secret_key, json_data)
+            create_new_model(secret_key, model_name, json_data)
+            
+            # insert new bot to database
+            chatbotDatabase = ChatbotDatabase(secretKey=secret_key, botName=model_name)
+            
+            # save database
+            chatbotDatabase.save()
             
         else:
-            return HttpResponseBadRequest('json not parsed correctly')
+            return HttpResponseBadRequest('request is not POST')
     
     response = {'request_info': 'model trained successfully'}
     return JsonResponse(response, safe=False)
 
 
 # obtain new response
-def get_response(request, secret_key, inp_message):
+def get_response(request, secret_key, model_name, inp_message):
     # check if secret key exists
-    user_data = ChatbotDatabase.objects.filter(secretKey=secret_key).values()
+    user_data = UserDatabase.objects.filter(secretKey=secret_key).values()
+    
+    # check if model exists
+    chatbot_data = ChatbotDatabase.objects.filter(secretKey=secret_key, botName=model_name).values()
+    
     if len(user_data) == 0:
         return HttpResponseBadRequest('secret key does not exist')
     
+    elif len(chatbot_data) == 0:
+        return HttpResponseBadRequest('model ' + str(model_name) + ' does not exist')
+    
     else:
-        chat_result, tag_result = chat_response(secret_key, inp_message)
+        chat_result, tag_result = chat_response(secret_key, model_name, inp_message)
         response = {'chat_response': chat_result}
         
         # store in analytics database
         cur_date = datetime.utcnow()
-        analyticsDatabase = ChatbotAnalytics(secretKey=secret_key, date=cur_date, tag=tag_result, question=inp_message, response=chat_result)
+        analyticsDatabase = ChatbotAnalytics(secretKey=secret_key, botName=model_name, date=cur_date, tag=tag_result, question=inp_message, response=chat_result)
         analyticsDatabase.save()
         
-    return JsonResponse(response, safe=False)
+        return JsonResponse(response, safe=False)
 
 
 # gets past queries and information
-def get_past_data(request, secret_key, past_days):
+def get_past_data(request, secret_key, model_name, past_days):
     filter_date = datetime.utcnow() - timedelta(days=past_days)
-    data_list = ChatbotAnalytics.objects.filter(date__gte=filter_date, secretKey=secret_key).values()
+    data_list = ChatbotAnalytics.objects.filter(date__gte=filter_date, secretKey=secret_key, botName=model_name).values()
     
     result_list = []
     for row in data_list:
@@ -106,9 +127,9 @@ def get_past_data(request, secret_key, past_days):
 
 
 # gets the most popular tags in the past n days
-def get_popular_tags(request, secret_key, past_days):
+def get_popular_tags(request, secret_key, model_name, past_days):
     filter_date = datetime.utcnow() - timedelta(days=past_days)
-    data_list = ChatbotAnalytics.objects.filter(date__gte=filter_date, secretKey=secret_key).values()
+    data_list = ChatbotAnalytics.objects.filter(date__gte=filter_date, secretKey=secret_key, botName=model_name).values()
     
     tag_counter = {}
     for row in data_list:
