@@ -31,6 +31,9 @@ def preprocess_train_data(inp_json):
         new_patterns = [x for x in cur_patterns]
         if cur_pattern_length < alt_inp_length:
             num_paraphrases = math.ceil(alt_inp_length / cur_pattern_length)
+            
+            if num_paraphrases > 4:
+                num_paraphrases = 4
 
             cur_count = 0
             cur_idx = 0
@@ -56,6 +59,9 @@ def preprocess_train_data(inp_json):
         new_responses = [x for x in cur_responses]
         if cur_response_length < alt_out_length:
             num_paraphrases = alt_out_length - cur_response_length
+            
+            if num_paraphrases > 4:
+                num_paraphrases = 4
 
             original_text = cur_responses[0]
             paraphrase_list = get_alternatives(original_text, num_paraphrases)
