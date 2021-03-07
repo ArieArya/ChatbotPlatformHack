@@ -3,6 +3,7 @@ import math
 import time
 import json
 import os
+from random import randrange
 
 # Obtain all secrets
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -96,6 +97,7 @@ def get_alternatives(inp_text, numParaphrases):
     while True:
         try:
             response = requests.request("POST", url, data=payload, headers=headers)
+            print("response: ", response)
             result = response.json()[0]['paraphrases']
 
             alternatives = []
@@ -106,4 +108,6 @@ def get_alternatives(inp_text, numParaphrases):
             return alternatives
 
         except:
-            time.sleep(2)
+            print("collision detected")
+            sleep_time = randrange(10)
+            time.sleep(sleep_time)
