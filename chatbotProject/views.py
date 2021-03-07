@@ -57,14 +57,8 @@ def train_new_model(request, secret_key, model_name):
     # check if secret key exists
     user_data = UserDatabase.objects.filter(secretKey=secret_key).values()
     
-    # check if model with same name already exists
-    chatbot_data = ChatbotDatabase.objects.filter(secretKey=secret_key, botName=model_name).values()
-    
     if len(user_data) == 0:
         return HttpResponseBadRequest('secret key does not exist')
-    
-    elif len(chatbot_data) > 0:
-        return HttpResponseBadRequest('chatbot name already exists')
         
     else:
         if request.method == 'POST':
@@ -73,11 +67,15 @@ def train_new_model(request, secret_key, model_name):
             
             create_new_model(secret_key, model_name, train_data)
             
-            # insert new bot to database
-            chatbotDatabase = ChatbotDatabase(secretKey=secret_key, botName=model_name)
+            # check if model with same name already exists
+            chatbot_data = ChatbotDatabase.objects.filter(secretKey=secret_key, botName=model_name).values()
             
-            # save database
-            chatbotDatabase.save()
+            if len(chatbot_data) == 0:
+                # insert new bot to database if not already in database
+                chatbotDatabase = ChatbotDatabase(secretKey=secret_key, botName=model_name)
+                
+                # save database
+                chatbotDatabase.save()
             
         else:
             return HttpResponseBadRequest('request is not POST')

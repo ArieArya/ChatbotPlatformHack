@@ -30,8 +30,7 @@ To train a new chatbot model / update an existing chatbot model, a POST request 
 ```
 /trainNewModel/secretkey=<str:secret_key>/modelName=<str:model_name>
 ```
-If the passed secret key is invalid or if the chatbot name already exists, a HTTP 400 Bad Request will be raised. The POST request must contain a JSON message body of the 
-following format:
+If the passed secret key is invalid, a HTTP 400 Bad Request will be raised. The POST request must contain a JSON message body of the following format:
 ```python
 {
   "intents": [
