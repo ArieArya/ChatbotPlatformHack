@@ -1,36 +1,121 @@
 {
     "intents": [{
-            "tag": "coffee",
-            "patterns": ["what coffee do you serve here?", "what types of coffee do you have?"],
-            "responses": ["we have latte, frappe, espresso, and many more!"]
-        },
-
-        {
-            "tag": "desserts",
-            "patterns": ["what are some of your favourite desserts?", "which desserts are the best here?"],
-            "responses": ["our favourite desserts are the chocolate cake and the strawberry pancakes"]
-        },
-
-        {
-            "tag": "openingHours",
-            "patterns": ["what time do you usually open?", "when are you open?"],
-            "responses": ["we are open from 8am to 10pm every day"]
-        },
-        {
             "tag": "greeting",
-            "patterns": ["Hi", "Is anyone there?", "Hello", "Good day"],
-            "responses": ["Hello, how are you?", "Good to see you again!", "Hi there, what questions can I answer for you today?"]
+            "patterns": [
+                "Hi",
+                "Hey!",
+                "Hey there",
+                "Heya"
+            ],
+            "responses": [
+                "Hello, how are you?"
+            ]
         },
         {
-            "tag": "greetingResponse",
-            "patterns": ["How are you?", "How is everything?", "How is life?", "You good?", "You doing ok?", "Hey how are you?"],
-            "responses": ["I'm doing great, thank you", "I'm doing fantastic!", "I'm feeling great!"]
+            "tag": "greeting Response",
+            "patterns": [
+                "How are you?",
+                "How is everything?",
+                "How is life?",
+                "You good?",
+                "You doing ok?",
+                "Hey how are you?"
+            ],
+            "responses": [
+                "I'm doing great, thank you",
+                "I'm good, thanks"
+            ]
         },
-
         {
             "tag": "farewell",
-            "patterns": ["See you later", "Good bye", "Have a Good day", "Good talking to you!", "Goodbye", "bye bye"],
-            "responses": ["Sad to see you go!", "See you later", "Goodbye!", "Bye bye", "Have a nice day!"]
+            "patterns": [
+                "See you later",
+                "Good bye",
+                "Have a Good day",
+                "Good talking to you!",
+                "Goodbye",
+                "bye bye"
+            ],
+            "responses": [
+                "Sad to see you go!",
+                "Goodbye!"
+            ]
+        },
+        {
+            "tag": "Opening Hours",
+            "patterns": [
+                "what time do you usually open?",
+                "when are you open?",
+                "What are your opening hours?",
+                "what time do you close?"
+            ],
+            "responses": [
+                "we are open from 8am to 10pm every day"
+            ]
+        },
+        {
+            "tag": "Hot drinks",
+            "patterns": [
+                "do you serve hot drinks as well?",
+                "what hot drinks do you sell?",
+                "do you sell coffee?",
+                "what types of coffee do you have?",
+                "what drinks do you have?"
+            ],
+            "responses": [
+                "we have latte, espresso, a variety of teas and many more!"
+            ]
+        },
+        {
+            "tag": "Menu",
+            "patterns": [
+                "what do you sell?",
+                "What's on the menu?",
+                "what do you specialize in?",
+                "what do you sell here?",
+                "what do you have for sale?"
+            ],
+            "responses": [
+                "we have an expansive desserts menu, with a variety of hot and cold drinks as well!"
+            ]
+        },
+        {
+            "tag": "Delivery",
+            "patterns": [
+                "Do you deliver?",
+                "Are you on Just Eat?",
+                "Are you on Uber Eats?",
+                "Do you offer a delivery service?",
+                "Do you do any type of delivery?"
+            ],
+            "responses": [
+                "You can find us on Just Eat, Uber Eats and Deliveroo "
+            ]
+        },
+        {
+            "tag": "Creation Date",
+            "patterns": [
+                "How long have you been open?",
+                "When was this place opened?",
+                "When did sweet treats start?",
+                "when did your business open?"
+            ],
+            "responses": [
+                "We've been opened since the 3rd of July, 2018"
+            ]
+        },
+        {
+            "tag": "Location",
+            "patterns": [
+                "where are you based?",
+                "what city are you located in?",
+                "where's your store?",
+                "where can I find you guys?",
+                "where are you located in?"
+            ],
+            "responses": [
+                "You can find us in Shoreditch, East London"
+            ]
         }
     ]
 }
