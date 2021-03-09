@@ -1,5 +1,5 @@
 # API Documentation
-Please find the main API url in <a href='http://ec2-18-135-99-244.eu-west-2.compute.amazonaws.com/'>this link.</a>
+Please find the main API url in <a href='https://colloquychatbotapi.com/'>this link.</a>
 
 ## Login
 Each user will have their corresponding username, password, and secret key stored in the back-end database. Upon logging into the system, a secret key will be returned
