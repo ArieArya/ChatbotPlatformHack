@@ -1,5 +1,6 @@
 # API Documentation
-Please find the main API url in <a href='https://colloquychatbotapi.com/'>this link.</a>
+<p>Please find Colloquy front-end repository in <a href='https://github.com/samuel-adekunle/Colloquy-BGNHACK21'>this link.</a></p>
+<p>Please find the main API url in <a href='https://colloquychatbotapi.com/'>this link.</a></p>
 
 ## Login
 Each user will have their corresponding username, password, and secret key stored in the back-end database. Upon logging into the system, a secret key will be returned
